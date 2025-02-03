@@ -41,7 +41,7 @@ func _on_add_plc_item() -> void:
     _selected_plc = new_plc
     EventBus.plc_selected.emit(new_plc)
 
-func _on_plc_item_selected(index:int):
+func _on_plc_item_selected(index: int):
     _selected_plc = _plcs[index]
     EventBus.plc_selected.emit(_plcs[index])
 
@@ -54,12 +54,22 @@ func _on_plc_updated(plc_data: PlcData, property: String) -> void:
             _update_status(plc_data.ConnectionStatus, _plcs.find(plc_data))
 
 # Function to remove a PLC item
-func _on_remove_plc_item() -> void:
+func _on_remove_confirmed():
     var index = _plcs.find(_selected_plc)
     if PlcController.remove_plc(_selected_plc):
         plc_items.remove_item(index)
         EventBus.plc_deselect.emit()
 
+# Function to show window to confirme deleting
+func _on_remove_plc_item() -> void:
+    var params = {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to delete this PLC?",
+        "ok_text": "Yes, delete",
+        "cancel_text": "Cancel"
+}
+    
+    EventBus.show_confirm_popup.emit(params, _on_remove_confirmed)
 
 # Function to update the name of a PLC item
 func _update_name(new_name: String, plc_index: int) -> void:

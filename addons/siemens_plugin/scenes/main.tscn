@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=14 format=3 uid="uid://cwyxf78y08kuf"]
 
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_list.gd" id="1_ekivn"]
 [ext_resource type="StyleBox" uid="uid://bw3ee5t74byso" path="res://addons/siemens_plugin/themes/round_header.tres" id="2_a4axe"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plcs_controller.gd" id="6_uquoi"]
 [ext_resource type="Texture2D" uid="uid://bepwfcds0g51u" path="res://addons/siemens_plugin/icons/Ping.svg" id="7_1qxu3"]
 [ext_resource type="PackedScene" uid="uid://0bcym7qxne18" path="res://addons/siemens_plugin/scenes/confirm_window.tscn" id="12_ie3kl"]
+[ext_resource type="Script" path="res://addons/siemens_plugin/scenes/confirm_window.gd" id="13_a8tbq"]
 
 [node name="Main" type="Control"]
 clip_contents = true
@@ -127,18 +128,17 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="PlcConfig" type="Control" parent="HSplitContainer/VSplitContainer" node_paths=PackedStringArray("name_edit", "cpu_type_option", "ip_edit", "rack_spin", "slot_spin")]
-visible = false
 clip_contents = true
 custom_minimum_size = Vector2(200, 210)
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.3
 script = ExtResource("4_7tc5y")
-name_edit = NodePath("ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit")
-cpu_type_option = NodePath("ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/CpuType/OptionButton")
-ip_edit = NodePath("ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit")
-rack_spin = NodePath("ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Rack/SpinBox")
-slot_spin = NodePath("ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Slot/SpinBox")
+name_edit = NodePath("ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit")
+cpu_type_option = NodePath("ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/CpuType/OptionButton")
+ip_edit = NodePath("ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit")
+rack_spin = NodePath("ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Rack/SpinBox")
+slot_spin = NodePath("ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Slot/SpinBox")
 
 [node name="Background" type="ColorRect" parent="HSplitContainer/VSplitContainer/PlcConfig"]
 layout_mode = 1
@@ -158,8 +158,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer"]
+[node name="Panel" type="Panel" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer"]
 layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel"]
+layout_mode = 2
+offset_right = 270.0
+offset_bottom = 210.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/margin_left = 5
@@ -167,10 +172,10 @@ theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 5
 theme_override_constants/margin_bottom = 5
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer"]
 layout_mode = 2
 
-[node name="Header" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="Header" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(0, 25)
 layout_mode = 2
 theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
@@ -180,34 +185,34 @@ text = "Plc Configuration"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Name" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Name"
 
-[node name="LineEdit" type="LineEdit" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Name"]
+[node name="LineEdit" type="LineEdit" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Palletizer plc"
 
-[node name="CpuType" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="CpuType" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/CpuType"]
+[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/CpuType"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Cpu Type"
 
-[node name="OptionButton" type="OptionButton" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/CpuType"]
+[node name="OptionButton" type="OptionButton" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/CpuType"]
 layout_mode = 2
 size_flags_horizontal = 3
 selected = 4
@@ -222,45 +227,45 @@ popup/item_3/id = 30
 popup/item_4/text = "S7-1500"
 popup/item_4/id = 40
 
-[node name="IP" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="IP" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/IP"]
+[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/IP"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "IP"
 
-[node name="LineEdit" type="LineEdit" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/IP"]
+[node name="LineEdit" type="LineEdit" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/IP"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "xxx.xxx.xxx.xxx"
 clear_button_enabled = true
 right_icon = ExtResource("5_yd0b5")
 
-[node name="Rack" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="Rack" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Rack"]
+[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Rack"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Rack"
 
-[node name="SpinBox" type="SpinBox" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Rack"]
+[node name="SpinBox" type="SpinBox" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Rack"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Slot" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer"]
+[node name="Slot" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 5
 
-[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Slot"]
+[node name="Label" type="Label" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Slot"]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "Slot"
 
-[node name="SpinBox" type="SpinBox" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Slot"]
+[node name="SpinBox" type="SpinBox" parent="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Slot"]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -303,14 +308,15 @@ script = ExtResource("6_uquoi")
 
 [node name="ConfirmWindow" parent="." instance=ExtResource("12_ie3kl")]
 visible = false
+script = ExtResource("13_a8tbq")
 
 [connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/AddPlcItem" to="HSplitContainer/VSplitContainer/PlcList" method="_on_add_plc_item"]
 [connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/Button" to="HSplitContainer/VSplitContainer/PlcList" method="_on_remove_plc_item"]
 [connection signal="item_selected" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/ScrollContainer/ItemList" to="HSplitContainer/VSplitContainer/PlcList" method="_on_plc_item_selected"]
-[connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_focus_exited"]
-[connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_text_submitted"]
-[connection signal="item_selected" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/CpuType/OptionButton" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_cpu_type_option_selected"]
-[connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_ip_focus_exited"]
-[connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_ip_text_submitted"]
-[connection signal="value_changed" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Rack/SpinBox" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_rack_value_changed"]
-[connection signal="value_changed" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/MarginContainer/VBoxContainer/VBoxContainer/Slot/SpinBox" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_slot_value_changed"]
+[connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_focus_exited"]
+[connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_text_submitted"]
+[connection signal="item_selected" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/CpuType/OptionButton" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_cpu_type_option_selected"]
+[connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_ip_focus_exited"]
+[connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/IP/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_ip_text_submitted"]
+[connection signal="value_changed" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Rack/SpinBox" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_rack_value_changed"]
+[connection signal="value_changed" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Slot/SpinBox" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_slot_value_changed"]
