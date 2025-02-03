@@ -2,9 +2,9 @@
 extends Node
 
 enum Status {
-    CONNECTED,
-    DISCONNECTED,
-    UNKNOWN
+	CONNECTED,
+	DISCONNECTED,
+	UNKNOWN
 }
 
 # Base name for PLC items
@@ -25,8 +25,42 @@ func create_plc() -> PlcData:
 
 	return new_plc
 
+# Function to clear the list of PLC items
 func clear_plcs() -> void:
 	plcs.clear()
+
+const MAX_PING_ATTEMPTS = 3
+const PING_TIMEOUT_MS = 1000  # 1 segundo por intento
+
+func ping_plc(selected_plc: PlcData) -> void:
+	var thread = Thread.new()
+	thread.start(Callable(self, "_ping_thread").bind(selected_plc))
+	thread.wait_to_finish()
+
+func _ping_thread(selected_plc: PlcData) -> void:
+	var success = false
+	
+	for attempt in range(MAX_PING_ATTEMPTS):
+		if attempt > 0:
+			OS.delay_msec(PING_TIMEOUT_MS)
+		
+		success = selected_plc.Ping()
+		if success:
+			break
+			
+		call_deferred("_on_ping_attempt_failed", selected_plc, attempt + 1)
+	
+	call_deferred("_on_ping_completed", selected_plc, success)
+
+func _on_ping_attempt_failed(plc_data: PlcData, attempt: int) -> void:
+	EventBus.ping_attempt_failed.emit(plc_data, attempt, MAX_PING_ATTEMPTS)
+
+
+func _on_ping_completed(plc_data: PlcData, success: bool) -> void:
+	if plc_data:  # Verificar que plc_data no sea null
+		print("Ping completed ", plc_data.Name, " ", success)
+		EventBus.ping_completed.emit(plc_data, success)
+
 
 # Function to remove a Plc item
 func remove_plc(plc: PlcData) -> bool:

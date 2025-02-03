@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=13 format=3 uid="uid://cwyxf78y08kuf"]
 
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_list.gd" id="1_ekivn"]
 [ext_resource type="StyleBox" uid="uid://bw3ee5t74byso" path="res://addons/siemens_plugin/themes/round_header.tres" id="2_a4axe"]
@@ -12,7 +12,6 @@
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plcs_controller.gd" id="6_uquoi"]
 [ext_resource type="Texture2D" uid="uid://bepwfcds0g51u" path="res://addons/siemens_plugin/icons/Ping.svg" id="7_1qxu3"]
 [ext_resource type="PackedScene" uid="uid://0bcym7qxne18" path="res://addons/siemens_plugin/scenes/confirm_window.tscn" id="12_ie3kl"]
-[ext_resource type="Script" path="res://addons/siemens_plugin/scenes/confirm_window.gd" id="13_a8tbq"]
 
 [node name="Main" type="Control"]
 clip_contents = true
@@ -308,10 +307,10 @@ script = ExtResource("6_uquoi")
 
 [node name="ConfirmWindow" parent="." instance=ExtResource("12_ie3kl")]
 visible = false
-script = ExtResource("13_a8tbq")
 
 [connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/AddPlcItem" to="HSplitContainer/VSplitContainer/PlcList" method="_on_add_plc_item"]
 [connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/Button" to="HSplitContainer/VSplitContainer/PlcList" method="_on_remove_plc_item"]
+[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/Button4" to="HSplitContainer/VSplitContainer/PlcList" method="_on_ping_selected_plc"]
 [connection signal="item_selected" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/ScrollContainer/ItemList" to="HSplitContainer/VSplitContainer/PlcList" method="_on_plc_item_selected"]
 [connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_focus_exited"]
 [connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_text_submitted"]

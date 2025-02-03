@@ -1,6 +1,20 @@
-[gd_scene format=3 uid="uid://0bcym7qxne18"]
+[gd_scene load_steps=2 format=3 uid="uid://0bcym7qxne18"]
 
-[node name="ConfirmWindow" type="ConfirmationDialog"]
+[ext_resource type="Script" path="res://addons/siemens_plugin/scripts/confirm_window.gd" id="1_g327h"]
+
+[node name="ConfirmWindow" type="ConfirmationDialog" node_paths=PackedStringArray("progress_bar")]
 initial_position = 2
 size = Vector2i(285, 158)
 visible = true
+script = ExtResource("1_g327h")
+progress_bar = NodePath("ProgressBar")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+visible = false
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 277.0
+offset_bottom = 109.0
+show_percentage = false
+indeterminate = true
+editor_preview_indeterminate = true
