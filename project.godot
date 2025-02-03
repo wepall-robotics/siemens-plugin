@@ -1,0 +1,33 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Siemens-Plugin"
+config/features=PackedStringArray("4.3", "C#", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+PlcController="*res://addons/siemens_plugin/scripts/plcs_controller.gd"
+EventBus="*res://addons/siemens_plugin/scripts/event_bus.gd"
+PlcsController="*res://addons/siemens_plugin/scripts/plcs_controller.gd"
+
+[display]
+
+window/stretch/mode="viewport"
+
+[dotnet]
+
+project/assembly_name="Siemens-Plugin"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/siemens_plugin/plugin.cfg")

@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://0bcym7qxne18"]
+
+[node name="ConfirmWindow" type="ConfirmationDialog"]
+initial_position = 2
+size = Vector2i(285, 158)
+visible = true
+dialog_text = "Buah que guapo está Godot"
