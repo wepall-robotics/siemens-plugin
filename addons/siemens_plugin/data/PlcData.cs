@@ -1,7 +1,7 @@
 using S7.Net;
 using Godot;
 using System;
-using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 
 [GlobalClass]
 public partial class PlcData : Resource
@@ -12,6 +12,9 @@ public partial class PlcData : Resource
 		Disconnected,
 		Unknown
 	}
+
+	[Signal]
+	public delegate void PingCompletedEventHandler(bool success);
 
 	[Export]
 	public string IPAddress { get; set; } = String.Empty;
@@ -52,18 +55,20 @@ public partial class PlcData : Resource
 			}
 		}
 	}
-	public bool Ping()
+	public async Task Ping()
 	{
         using var plc = new Plc(Type, IPAddress, Rack, Slot);
         try
         {
-            plc.Open();
-            return plc.IsConnected;
+            await plc.OpenAsync();
+			EmitSignal(nameof(PingCompleted), plc.IsConnected);
+            // return plc.IsConnected;
         }
         catch (Exception ex)
         {
             GD.PrintErr($"Error pinging PLC: {ex.Message}");
-            return false;
+			EmitSignal(nameof(PingCompleted), false);
+            // return false;
         }
     }
 }

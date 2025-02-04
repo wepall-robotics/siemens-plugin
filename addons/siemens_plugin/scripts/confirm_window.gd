@@ -5,10 +5,15 @@ extends ConfirmationDialog
 @export var progress_bar: ProgressBar
 
 func _ready() -> void:
-	EventBus.show_confirm_popup.connect(_on_show_confirm_popup)
+	EventBus.confirm_popup_invoked.connect(_show_confirm_popup)
+	EventBus.modify_content_popup_invoked.connect(_modify_content_popup)
 	EventBus.close_confirm_popup.connect(hide)
 
-func _on_show_confirm_popup(params: Dictionary, callback: Callable):	
+func _show_confirm_popup(params: Dictionary, callback: Callable):	
+	_modify_content_popup(params, callback)
+	popup_centered()
+
+func _modify_content_popup(params: Dictionary, callback: Callable):
 	# Fill the elements with params
 	title = params.get("title", "Confirm dialog")
 	dialog_text = params.get("message", "Are you sure?")
@@ -33,7 +38,4 @@ func _on_show_confirm_popup(params: Dictionary, callback: Callable):
 		progress_bar.visible = true
 		callback.call()
 	else:
-		progress_bar.visible = false
-	
-	
-	popup_centered()
+		progress_bar.visible = false	

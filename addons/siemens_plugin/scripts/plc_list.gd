@@ -71,40 +71,45 @@ func _on_remove_plc_item() -> void:
         "cancel_text": "Cancel",
     }
     
-    EventBus.show_confirm_popup.emit(params, _on_remove_confirmed)
+    EventBus.confirm_popup_invoked.emit(params, _on_remove_confirmed)
 
 func _on_ping_selected_plc() -> void:
     if _selected_plc:
-        # Primero mostrar la ventana de progreso
+        # Validate the IP address
+        if !PlcController.validate_ip_address(_selected_plc.IPAddress):
+            var params = {
+                "title": "Invalid IP Address",
+                "message": "The IP address is invalid. Please enter a valid IP address.",
+                "ok_text": "OK",
+                "cancel_text": "",
+                "progress": false
+            }
+            
+            EventBus.confirm_popup_invoked.emit(params, func(): pass)
+            return
+
+        # IP address is valid, start the ping process
         var params = {
             "title": "PLC Ping",
             "message": "Testing connection to PLC...",
             "progress": true,
-            "ok_text": "",  # Ocultar botón OK
+            "ok_text": "",  # Hide the OK button
             "cancel_text": "Cancel"
         }
         
-        # Usar call_deferred para asegurar que la ventana se muestre
-        EventBus.show_confirm_popup.emit(params, func(): pass)
-        
-        # Esperar un frame para asegurar que la ventana está visible
-        await get_tree().process_frame
-        
-        # Luego iniciar el ping
-        PlcController.ping_plc(_selected_plc)
+        EventBus.confirm_popup_invoked.emit(params, func(): PlcController.ping_plc(_selected_plc) )
 
+# # Function to show the progress window
+# func _on_ping_started(plc_data: PlcData) -> void:
+#     # Mostrar ventana de progreso
+#     var params = {
+#         "title": "PLC Ping",
+#         "message": "Testing connection to PLC...",
+#         "cancel_text": "Cancel",
+#         "progress": true,
+#     }
 
-# Function to show the progress window
-func _on_ping_started(plc_data: PlcData) -> void:
-    # Mostrar ventana de progreso
-    var params = {
-        "title": "PLC Ping",
-        "message": "Testing connection to PLC...",
-        "cancel_text": "Cancel",
-        "progress": true,
-    }
-
-    EventBus.show_confirm_popup.emit(params, func(): PlcController.ping_plc(plc_data) )
+#     EventBus.confirm_popup_invoked.emit(params, func(): PlcController.ping_plc(plc_data) )
 
 func _on_ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int) -> void:
     var params = {
@@ -112,11 +117,9 @@ func _on_ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int)
         "message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
         "progress": true
     }
-    EventBus.show_confirm_popup.emit(params)
+    EventBus.confirm_popup_invoked.emit(params)
 
-func _on_ping_completed(plc_data: PlcData, success: bool) -> void:
-    EventBus.close_confirm_popup.emit()
-    
+func _on_ping_completed(plc_data: PlcData, success: bool) -> void:    
     var params = {
         "title": "Ping Result",
         "message": "Connection " + ("successful" if success else "failed after %d attempts" % 4) + " to PLC at " + plc_data.IPAddress,
@@ -125,7 +128,7 @@ func _on_ping_completed(plc_data: PlcData, success: bool) -> void:
         "progress": false
     }
     
-    EventBus.show_confirm_popup.emit(params, func(): pass)
+    EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 
 # Function to update the name of a PLC item
