@@ -5,7 +5,10 @@ var panel: Control
 
 func _enable_plugin():
 	add_autoload_singleton("EventBus", "res://addons/siemens_plugin/scripts/event_bus.gd")
-	add_autoload_singleton("PlcsController", "res://addons/siemens_plugin/scripts/plcs_controller.gd")
+	# wait for autoload to be ready
+	await get_tree().physics_frame
+	add_autoload_singleton("PlcsController", "res://addons/siemens_plugin/scripts/PlcsController.cs")
+	await get_tree().physics_frame
 	panel = load("res://addons/siemens_plugin/scenes/main.tscn").instantiate()
 	add_control_to_bottom_panel(panel, "Siemens Manager")
 
@@ -18,5 +21,4 @@ func _disable_plugin():
 		panel.queue_free()
 		panel = null
 
-func _exit_tree():
-	PlcController.clear_plcs()
+

@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=12 format=3 uid="uid://cwyxf78y08kuf"]
 
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_list.gd" id="1_ekivn"]
 [ext_resource type="StyleBox" uid="uid://bw3ee5t74byso" path="res://addons/siemens_plugin/themes/round_header.tres" id="2_a4axe"]
@@ -9,7 +9,6 @@
 [ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_signals.gd" id="5_xmgbx"]
 [ext_resource type="Texture2D" uid="uid://k5a2d0o7o5lc" path="res://addons/siemens_plugin/icons/StatusError.svg" id="5_yd0b5"]
 [ext_resource type="Texture2D" uid="uid://dgxa8u5bvugvi" path="res://addons/siemens_plugin/icons/UnlinkButton.svg" id="6_8omwv"]
-[ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plcs_controller.gd" id="6_uquoi"]
 [ext_resource type="Texture2D" uid="uid://bepwfcds0g51u" path="res://addons/siemens_plugin/icons/Ping.svg" id="7_1qxu3"]
 [ext_resource type="PackedScene" uid="uid://0bcym7qxne18" path="res://addons/siemens_plugin/scenes/confirm_window.tscn" id="12_ie3kl"]
 
@@ -127,6 +126,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="PlcConfig" type="Control" parent="HSplitContainer/VSplitContainer" node_paths=PackedStringArray("name_edit", "cpu_type_option", "ip_edit", "rack_spin", "slot_spin")]
+visible = false
 clip_contents = true
 custom_minimum_size = Vector2(200, 210)
 layout_mode = 2
@@ -302,8 +302,7 @@ item_0/text = "Hola"
 item_1/text = "Como estás"
 item_2/text = "Yo muy bien"
 
-[node name="PlcController" type="Node" parent="."]
-script = ExtResource("6_uquoi")
+[node name="PlcsController" type="Node" parent="."]
 
 [node name="ConfirmWindow" parent="." instance=ExtResource("12_ie3kl")]
 visible = false

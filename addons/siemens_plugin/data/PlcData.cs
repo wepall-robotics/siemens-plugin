@@ -13,8 +13,7 @@ public partial class PlcData : Resource
 		Unknown
 	}
 
-	[Signal]
-	public delegate void PingCompletedEventHandler(bool success);
+
 
 	[Export]
 	public string IPAddress { get; set; } = String.Empty;
@@ -29,47 +28,4 @@ public partial class PlcData : Resource
 	[Export]
 	public Status ConnectionStatus { get; set; } = Status.Unknown;
 
-
-	public bool Connect()
-	{
-		// Implement PLC connection logic here
-		return true;
-	}
-
-	public void Disconnect()
-	{
-		using (var plc = new Plc(Type, IPAddress, Rack, Slot))
-		{
-			try
-			{
-				if (plc.IsConnected)
-				{
-					plc.Close();
-					ConnectionStatus = Status.Disconnected;
-					GD.Print("PLC disconnected successfully.");
-				}
-			}
-			catch (Exception ex)
-			{
-				GD.PrintErr($"Error disconnecting PLC: {ex.Message}");
-			}
-		}
-	}
-	public async Task Ping()
-	{
-        using var plc = new Plc(Type, IPAddress, Rack, Slot);
-        try
-        {
-            await plc.OpenAsync();
-			EmitSignal(nameof(PingCompleted), plc.IsConnected);
-            // return plc.IsConnected;
-        }
-        catch (Exception ex)
-        {
-            GD.PrintErr($"Error pinging PLC: {ex.Message}");
-			EmitSignal(nameof(PingCompleted), false);
-            // return false;
-        }
-    }
 }
-

@@ -20,21 +20,21 @@ const BASE_NAME = "Plc"
 # Item list for PLC items.
 @export var plc_items: ItemList
 
-var _plcs: Array[PlcData] = []
+var _plcs: Array
 var _selected_plc: PlcData
 
 @onready var icon: Texture2D = preload("res://addons/siemens_plugin/icons/Circle.svg")
 
 # Function called when the panel is initialized
-func _init():
+func _ready():
     EventBus.plc_updated.connect(_on_plc_updated)
     EventBus.ping_attempt_failed.connect(_on_ping_attempt_failed)
     EventBus.ping_completed.connect(_on_ping_completed)
-    _plcs = PlcController.plcs
+    _plcs = PlcsController.Plcs
 
 # Function called when the add button is pressed
 func _on_add_plc_item() -> void:
-    var new_plc = PlcController.create_plc()
+    var new_plc = PlcsController.CreatePlc()
     
     plc_items.add_item(new_plc.Name, icon)
     _update_status(new_plc.ConnectionStatus, _plcs.size() - 1)
@@ -58,7 +58,7 @@ func _on_plc_updated(plc_data: PlcData, property: String) -> void:
 # Function to remove a PLC item
 func _on_remove_confirmed():
     var index = _plcs.find(_selected_plc)
-    if PlcController.remove_plc(_selected_plc):
+    if PlcsController.RemovePlc(_selected_plc):
         plc_items.remove_item(index)
         EventBus.plc_deselect.emit()
 
@@ -76,7 +76,7 @@ func _on_remove_plc_item() -> void:
 func _on_ping_selected_plc() -> void:
     if _selected_plc:
         # Validate the IP address
-        if !PlcController.validate_ip_address(_selected_plc.IPAddress):
+        if !PlcsController.ValidateIP(_selected_plc.IPAddress):
             var params = {
                 "title": "Invalid IP Address",
                 "message": "The IP address is invalid. Please enter a valid IP address.",
@@ -97,7 +97,7 @@ func _on_ping_selected_plc() -> void:
             "cancel_text": "Cancel"
         }
         
-        EventBus.confirm_popup_invoked.emit(params, func(): PlcController.ping_plc(_selected_plc) )
+        # EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.(_selected_plc) )
 
 # # Function to show the progress window
 # func _on_ping_started(plc_data: PlcData) -> void:
@@ -109,7 +109,7 @@ func _on_ping_selected_plc() -> void:
 #         "progress": true,
 #     }
 
-#     EventBus.confirm_popup_invoked.emit(params, func(): PlcController.ping_plc(plc_data) )
+#     EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.ping_plc(plc_data) )
 
 func _on_ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int) -> void:
     var params = {

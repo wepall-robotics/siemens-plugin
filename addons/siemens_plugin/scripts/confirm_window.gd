@@ -5,6 +5,7 @@ extends ConfirmationDialog
 @export var progress_bar: ProgressBar
 
 func _ready() -> void:
+	print("Hola")
 	EventBus.confirm_popup_invoked.connect(_show_confirm_popup)
 	EventBus.modify_content_popup_invoked.connect(_modify_content_popup)
 	EventBus.close_confirm_popup.connect(hide)

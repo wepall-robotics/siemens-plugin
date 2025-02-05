@@ -45,24 +45,24 @@ func _load_plc(plc: PlcData) -> void:
 # Function called when the name edit field loses focus
 func _on_name_focus_exited():
 	if name_edit.text != _current_plc.Name:
-		name_edit.text = PlcController.update_plc_name(_current_plc, name_edit.text)
+		name_edit.text = PlcsController.UpdatePlcName(_current_plc, name_edit.text)
 
 # Function called when the name edit field is submitted
 func _on_name_text_submitted(new_text: String):
 	if name_edit.text != _current_plc.Name:
-		name_edit.text = PlcController.update_plc_name(_current_plc, new_text)
+		name_edit.text = PlcsController.UpdatePlcName(_current_plc, new_text)
 
 # Function called when the CPU type option is selected
 func _on_cpu_type_option_selected(index: int):
 	var selected_id = cpu_type_option.get_item_id(index)
 
 	if selected_id != _current_plc.Type:
-		PlcController.update_plc_type(_current_plc, selected_id)
+		PlcsController.UpdatePlcType(_current_plc, selected_id)
 
 # Function called when the IP edit field loses focus
 func _on_ip_focus_exited():
 	if ip_edit.text != _current_plc.IPAddress:
-		if not PlcController.update_plc_ip(_current_plc, ip_edit.text):
+		if not PlcsController.UpdatePlcIpAddress(_current_plc, ip_edit.text):
 			ip_edit.text = ""
 			_show_error_ip_icon(true)
 		else:
@@ -72,7 +72,7 @@ func _on_ip_focus_exited():
 # Function called when the IP edit field is submitted
 func _on_ip_text_submitted(new_text: String):
 	if ip_edit.text != _current_plc.IPAddress:
-		if not PlcController.update_plc_ip(_current_plc, new_text):
+		if not PlcsController.UpdatePlcIpAddress(_current_plc, new_text):
 			ip_edit.text = ""
 			_show_error_ip_icon(true)
 		else:
@@ -87,12 +87,12 @@ func _on_plc_deselect():
 # Function called when the rack spin box value changes
 func _on_rack_value_changed(value: float):
 	if value != _current_plc.Rack:
-		rack_spin.value = PlcController.update_plc_rack(_current_plc, value)
+		rack_spin.value = PlcsController.UpdatePlcRack(_current_plc, value)
 
 # Function called when the slot spin box value changes
 func _on_slot_value_changed(value: float):
 	if value != _current_plc.Slot:
-		slot_spin.value = PlcController.update_plc_slot(_current_plc, value)
+		slot_spin.value = PlcsController.UpdatePlcSlot(_current_plc, value)
 
 # Function to show or hide the error icon next to the IP edit field
 func _show_error_ip_icon(show: bool) -> void:
