@@ -4,163 +4,139 @@ using S7.Net;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Net.NetworkInformation;
 
 [Tool]
+
+/// <summary>
+/// The PlcsController class manages a collection of PLCs (Programmable Logic Controllers).
+/// It provides methods to create, update, remove, and manage PLCs, as well as to handle
+/// communication and connection operations.
+/// </summary>
 public partial class PlcsController : Node
 {
-    [Signal]
-    public delegate void PingCompletedEventHandler(bool success);
-
+    #region Constants
     const string BASE_NAME = "Plc";
-    const int MAX_PING_ATTEMPS = 3;
-    const float PING_TIMEOUT_S = 1f;
+    const int MAX_PING_ATTEMPS = 4;
+    const int PING_TIMEOUT = 1000;
+    const int RETRY_BASE_DELAY = 500;
+    #endregion
 
+    #region Exports Variables
     [Export]
     public Godot.Collections.Array Plcs { get; private set; } = new Godot.Collections.Array();
     public static PlcsController Instance { get; private set; }
+    #endregion
 
-    private GodotObject eventBus;
+    #region Private Variables
+    private GodotObject _eventBus;
+    private Ping _ping = new Ping();
+    private CancellationTokenSource _cts;
+    #endregion
 
+    #region Godot Override Methods
+    /// <summary>
+    /// Called when the node is initialized.
+    /// 
+    /// Clears the list of PLCs, sets the static instance reference, and retrieves the EventBus node.
+    /// 
+    /// <remarks>
+    /// The EventBus node is necessary for communication between the PlcsController and other scripts.
+    /// If the EventBus node cannot be found, an error message is printed to the console.
+    /// </remarks>
+    /// </summary>
     public override void _Ready()
     {
         ClearPlcs();
         Instance = this;
-        eventBus = GetNode<GodotObject>("/root/EventBus");
+        _eventBus = GetNode<GodotObject>("/root/EventBus");
+
+        if (_eventBus == null)
+            GD.PrintErr("EventBus node not found!");
     }
 
-    public PlcData CreatePlc()
+    /// <summary>
+    /// Clean up resources when the node is removed from the tree.
+    /// </summary>
+    public override void _ExitTree()
     {
-        var plc = new PlcData();
-        plc.Name = GetUniqueName();
-        Plcs.Add(plc);
-
-        eventBus.EmitSignal("plc_added", plc);
-        return plc;
+        if (_cts != null)
+            _cts.Dispose();
+        _ping.Dispose();
     }
 
-    public bool RemovePlc(PlcData plc)
+    #endregion
+
+    #region Public Methods
+    /// <summary>
+    /// Cancels the ongoing ping operation if it has not been cancelled yet.
+    /// </summary>
+    /// <remarks>
+    /// This method attempts to cancel the token source associated with the ping operation.
+    /// It safely handles the case where the token source has already been disposed.
+    /// /// </remarks>
+    public void CancelPing()
     {
-        if (Plcs.Contains(plc))
+        try
         {
-            Plcs.Remove(plc);
-            eventBus.EmitSignal("plc_removed", plc);
-            return true;
+            if (_cts != null && !_cts.IsCancellationRequested)
+                _cts.Cancel();
         }
-
-        return false;
+        catch (ObjectDisposedException) { }
     }
 
+
+    /// <summary>
+    /// Clears the collection of PLCs.
+    /// /// </summary>
     public void ClearPlcs()
     {
         Plcs.Clear();
     }
 
-    public string UpdatePlcName(PlcData plc, string newName)
-    {
-        if (Plcs.Contains(plc))
-        {
-            if (PlcNameExists(newName))
-                plc.Name = newName;
-            else
-                plc.Name = GetUniqueName(newName);
-
-            eventBus.EmitSignal("plc_updated", plc, "Name");
-            return plc.Name;
-        }
-
-        return string.Empty;
-    }
-
-    public void UpdatePlcType(PlcData plc, int cpuType)
-    {
-        if (Plcs.Contains(plc))
-        {
-            plc.Type = (CpuType)cpuType;
-            eventBus.EmitSignal("plc_updated", plc, "Type");
-        }
-    }
-
-    public bool UpdatePlcIpAddress(PlcData plc, string ipAddress)
-    {
-        if (Plcs.Contains(plc))
-        {
-            if (!ValidateIP(ipAddress))
-                return false;
-
-            plc.IPAddress = ipAddress;
-            eventBus.EmitSignal("plc_updated", plc, "IpAddress");
-
-            return true;
-        }
-        return false;
-    }
-
-    public float UpdatePlcRack(PlcData plc, short rack)
-    {
-        if (Plcs.Contains(plc))
-        {
-            plc.Rack = rack;
-            eventBus.EmitSignal("plc_updated", plc, "Rack");
-            return plc.Rack;
-        }
-        return -1;
-    }
-
-    public float UpdatePlcSlot(PlcData plc, short slot)
-    {
-        if (Plcs.Contains(plc))
-        {
-            plc.Slot = slot;
-            eventBus.EmitSignal("plc_updated", plc, "Slot");
-            return plc.Slot;
-        }
-        return -1;
-    }
-
     /// <summary>
-    /// Generates a unique name based on the given base name.
-    /// The function will append a counter starting from 1 if the name already exists.
+    /// Attempts to establish a connection to the PLC.
+    /// <para>
+    /// The function will implement the necessary logic to connect to the PLC
+    /// using the available connection parameters. If the connection is successful,
+    /// the function returns true; otherwise, it returns false.
+    /// </para>
     /// </summary>
-    /// <param name="baseName">The base name to generate the unique name from.</param>
-    /// <returns>A unique name.</returns>
-    private string GetUniqueName(String baseName = BASE_NAME)
-    {
-        var counter = 1;
-        var uniqueName = baseName;
-        while (PlcNameExists(uniqueName))
-        {
-            uniqueName = baseName + " " + counter;
-            counter++;
-        }
-        return uniqueName;
-    }
-
-    private bool PlcNameExists(string uniqueName)
-    {
-        return Plcs.Any(plc => ((PlcData)plc).Name == uniqueName);
-    }
-
-    public bool ValidateIP(string ip)
-    {
-        if (IPAddress.TryParse(ip, out var address))
-        {
-            // Verificar que sea IPv4 y que el formato coincida exactamente
-            bool isValid = address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
-                        && address.ToString() == ip;
-
-            GD.Print($"IP validada: {isValid} -> {address}");
-            return isValid;
-        }
-        return false;
-    }
-
-
+    /// /// <returns>True if the connection is successfully established; otherwise, false.</returns>
     public bool Connect()
     {
         // Implement PLC connection logic here
         return true;
     }
 
+    /// <summary>
+    /// Creates a new PLC instance, assigns it a unique name, and adds it to the collection.
+    /// </summary>
+    /// /// <returns>The newly created PlcData object.</returns>
+    public PlcData CreatePlc()
+    {
+        var plc = new PlcData();
+        plc.Name = GetUniqueName();
+        Plcs.Add(plc);
+
+        _eventBus.EmitSignal("plc_added", plc);
+        return plc;
+    }
+
+    /// <summary>
+    /// Disconnects the PLC with the given data.
+    /// <para>
+    /// The function will attempt to disconnect the PLC and update the connection status
+    /// of the given PLC data accordingly. If the disconnection is successful,
+    /// the "plc_updated" signal will be emitted with the given PLC data and
+    /// a value of "ConnectionStatus".
+    /// </para>
+    /// <para>
+    /// If an error occurs while disconnecting the PLC, an error message will
+    /// be printed to the console.
+    /// </para>
+    /// /// </summary>
     public void Disconnect(PlcData plcData)
     {
         using (var plc = new Plc(plcData.Type, plcData.IPAddress, plcData.Rack, plcData.Slot))
@@ -180,21 +156,254 @@ public partial class PlcsController : Node
             }
         }
     }
-    private async Task<bool> AsyncPing(PlcData plcData)
+
+    /// <summary>
+    /// Removes a PLC from the collection.
+    /// 
+    /// <param name="plc">The PLC to remove.</param>
+    /// 
+    /// <returns>True if the PLC was removed, false otherwise.</returns>
+    /// /// </summary>
+    public bool RemovePlc(PlcData plc)
     {
-        using var plc = new Plc(plcData.Type, plcData.IPAddress, plcData.Rack, plcData.Slot);
-        try
+        if (Plcs.Contains(plc))
         {
-            await plc.OpenAsync();
-            EmitSignal(nameof(PingCompleted), plc.IsConnected);
-            return plc.IsConnected;
+            Plcs.Remove(plc);
+            _eventBus.EmitSignal("plc_removed", plc);
+            return true;
         }
-        catch (Exception ex)
+
+        return false;
+    }
+
+
+    /// <summary>
+    /// Updates the name of the specified PLC.
+    /// 
+    /// <param name="plc">The PLC to update.</param>
+    /// <param name="newName">The new name.</param>
+    /// 
+    /// <returns>The updated name.</returns>
+    /// </summary>
+    public string UpdatePlcName(PlcData plc, string newName)
+    {
+        if (Plcs.Contains(plc))
         {
-            GD.PrintErr($"Error pinging PLC: {ex.Message}");
-            EmitSignal(nameof(PingCompleted), false);
-            return false;
+            if (PlcNameExists(newName))
+                plc.Name = newName;
+            else
+                plc.Name = GetUniqueName(newName);
+
+            _eventBus.EmitSignal("plc_updated", plc, "Name");
+            return plc.Name;
+        }
+
+        return string.Empty;
+    }
+
+    /// <summary>
+    /// Updates the type of the specified PLC.
+    /// 
+    /// <param name="plc">The PLC to update.</param>
+    /// <param name="cpuType">The ID of the type to set.</param>
+    /// 
+    /// <remarks>
+    /// The type is specified as an ID of the <see cref="CpuType"/> enum.
+    /// /// </remarks>
+    /// </summary>
+    public void UpdatePlcType(PlcData plc, int cpuType)
+    {
+        if (Plcs.Contains(plc))
+        {
+            plc.Type = (CpuType)cpuType;
+            _eventBus.EmitSignal("plc_updated", plc, "Type");
         }
     }
 
+    /// <summary>
+    /// Updates the IP address of the specified PLC.
+    /// 
+    /// <param name="plc">The PLC to update.</param>
+    /// <param name="ipAddress">The new IP address.</param>
+    /// 
+    /// <returns>True if the IP address was updated successfully, false otherwise.</returns>
+    /// /// </summary>
+    public bool UpdatePlcIpAddress(PlcData plc, string ipAddress)
+    {
+        if (Plcs.Contains(plc))
+        {
+            if (!ValidateIP(ipAddress))
+                return false;
+
+            plc.IPAddress = ipAddress;
+            _eventBus.EmitSignal("plc_updated", plc, "IpAddress");
+
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Updates the rack of the specified PLC.
+    /// 
+    /// <param name="plc">The PLC to update.</param>
+    /// <param name="rack">The new rack value.</param>
+    /// 
+    /// <returns>The new rack value if the update was successful, -1 otherwise.</returns>
+    /// /// </summary>
+    public float UpdatePlcRack(PlcData plc, short rack)
+    {
+        if (Plcs.Contains(plc))
+        {
+            plc.Rack = rack;
+            _eventBus.EmitSignal("plc_updated", plc, "Rack");
+            return plc.Rack;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Updates the slot of the given PLC.
+    /// 
+    /// <param name="plc">The PLC to update.</param>
+    /// <param name="slot">The new slot value.</param>
+    /// 
+    /// <returns>The new slot value if the update was successful, -1 otherwise.</returns>
+    /// </summary>
+    public float UpdatePlcSlot(PlcData plc, short slot)
+    {
+        if (Plcs.Contains(plc))
+        {
+            plc.Slot = slot;
+            _eventBus.EmitSignal("plc_updated", plc, "Slot");
+            return plc.Slot;
+        }
+        return -1;
+    }
+
+    /// <summary>
+    /// Validates an IP address. The validation is done by parsing the IP as an IPv4 address and
+    /// verifying that the parsed address matches the given string exactly.
+    /// </summary>
+    /// <param name="ip">The IP address to validate.</param>
+    /// <returns><c>true</c> if the IP is valid, <c>false</c> otherwise.</returns>
+    public bool ValidateIP(string ip)
+    {
+        if (IPAddress.TryParse(ip, out var address))
+        {
+            // Verify that the IP is IPv4 and matches the given string exactly
+            bool isValid = address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
+                        && address.ToString() == ip;
+
+            return isValid;
+        }
+        return false;
+    }
+
+    #endregion
+
+    #region Private Methods
+    /// <summary>
+    /// Generates a unique name based on the given base name.
+    /// The function will append a counter starting from 1 if the name already exists.
+    /// </summary>
+    /// <param name="baseName">The base name to generate the unique name from.</param>
+    /// <returns>A unique name.</returns>
+    private string GetUniqueName(String baseName = BASE_NAME)
+    {
+        var counter = 1;
+        var uniqueName = baseName;
+        while (PlcNameExists(uniqueName))
+        {
+            uniqueName = baseName + " " + counter;
+            counter++;
+        }
+        return uniqueName;
+    }
+
+    /// <summary>
+    /// Pings the PLC using the given data.
+    /// <para>
+    /// The function will attempt to ping the PLC up to MAX_PING_ATTEMPTS times.
+    /// If the ping is successful, the function will emit the "ping_completed" signal
+    /// with the given PLC data and a value of true. If all attempts fail, the
+    /// function will emit the "ping_completed" signal with the given PLC data and
+    /// a value of false.
+    /// </para>
+    /// <para>
+    /// The function may be cancelled using the CancelPing function.
+    /// </para>
+    /// </summary>
+    /// <param name="plcData">The PLC data to use for the ping.</param>
+    private async void Ping(PlcData plcData)
+    {
+        if (plcData == null || string.IsNullOrEmpty(plcData.IPAddress))
+        {
+            GD.PrintErr("PLC data or IP address is null");
+            return;
+        }
+
+        CancelPing();
+
+        _cts = new CancellationTokenSource();
+        var success = false;
+
+        try
+        {
+            for (int attempts = 1; attempts <= MAX_PING_ATTEMPS; attempts++)
+            {
+                if (!IsInstanceValid(this) || _cts.IsCancellationRequested)
+                    break;
+
+                GD.Print($"Ping attempt #{attempts} for {plcData.IPAddress}");
+
+                try
+                {
+                    var reply = await _ping.SendPingAsync(plcData.IPAddress, PING_TIMEOUT)
+                                            .WaitAsync(_cts.Token);
+
+                    if (reply.Status == IPStatus.Success)
+                    {
+                        success = true;
+                        break;
+                    }
+
+                    if (attempts < MAX_PING_ATTEMPS)
+                    {
+                        await Task.Delay(RETRY_BASE_DELAY * attempts, _cts.Token);
+                        if (IsInstanceValid(this) && _eventBus != null)
+                        {
+                            _eventBus.EmitSignal("ping_attempt_failed", plcData, attempts + 1, MAX_PING_ATTEMPS);
+                        }
+                    }
+                }
+                catch (PingException ex)
+                {
+                    GD.PrintErr($"Error in attemp {attempts + 1}: {ex.Message}");
+                    if (attempts == MAX_PING_ATTEMPS) throw;
+                }
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            GD.Print("Ping cancelled by user");
+            CancelPing();
+        }
+        finally
+        {
+            _eventBus.EmitSignal("ping_completed", plcData, success);
+            CancelPing();
+        }
+    }
+
+    /// <summary>
+    /// Checks if a PLC with the given name already exists.
+    /// </summary>
+    /// <param name="uniqueName">The name to check for.</param>
+    /// /// <returns><c>true</c> if a PLC with the given name exists, <c>false</c> otherwise.</returns>
+    private bool PlcNameExists(string uniqueName)
+    {
+        return Plcs.Any(plc => ((PlcData)plc).Name == uniqueName);
+    }
+    #endregion
 }

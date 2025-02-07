@@ -10,28 +10,34 @@ enum Status {
     UNKNOWN
 }
 
-# Base name for PLC items
-const BASE_NAME = "Plc"
-
+#region Export Variables
 # Container for the list of PLC items
 @export var plc_list_container: VBoxContainer
 # Button to add a new PLC item
 @export var add_plc_button: Button
 # Item list for PLC items.
 @export var plc_items: ItemList
+#endregion
 
+#region Private Variables
 var _plcs: Array
 var _selected_plc: PlcData
+#endregion
 
+#region @onready Variables
 @onready var icon: Texture2D = preload("res://addons/siemens_plugin/icons/Circle.svg")
+#endregion
 
+#region Godot Override Methods
 # Function called when the panel is initialized
 func _ready():
     EventBus.plc_updated.connect(_on_plc_updated)
     EventBus.ping_attempt_failed.connect(_on_ping_attempt_failed)
     EventBus.ping_completed.connect(_on_ping_completed)
     _plcs = PlcsController.Plcs
+#endregion
 
+#region Private Methods
 # Function called when the add button is pressed
 func _on_add_plc_item() -> void:
     var new_plc = PlcsController.CreatePlc()
@@ -43,6 +49,7 @@ func _on_add_plc_item() -> void:
     _selected_plc = new_plc
     EventBus.plc_selected.emit(new_plc)
 
+# Function called when a PLC item is selected
 func _on_plc_item_selected(index: int):
     _selected_plc = _plcs[index]
     EventBus.plc_selected.emit(_plcs[index])
@@ -73,6 +80,7 @@ func _on_remove_plc_item() -> void:
     
     EventBus.confirm_popup_invoked.emit(params, _on_remove_confirmed)
 
+# Function to show the ping dialog
 func _on_ping_selected_plc() -> void:
     if _selected_plc:
         # Validate the IP address
@@ -94,31 +102,24 @@ func _on_ping_selected_plc() -> void:
             "message": "Testing connection to PLC...",
             "progress": true,
             "ok_text": "",  # Hide the OK button
-            "cancel_text": "Cancel"
+            "cancel_text": "Cancel",
+            "cancel_callback": func(): PlcsController.CancelPing()
         }
         
-        # EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.(_selected_plc) )
+        EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.Ping(_selected_plc) )
 
-# # Function to show the progress window
-# func _on_ping_started(plc_data: PlcData) -> void:
-#     # Mostrar ventana de progreso
-#     var params = {
-#         "title": "PLC Ping",
-#         "message": "Testing connection to PLC...",
-#         "cancel_text": "Cancel",
-#         "progress": true,
-#     }
-
-#     EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.ping_plc(plc_data) )
-
+# Function to modify content of the confirmation dialog
+# when a ping attempt fails
 func _on_ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int) -> void:
     var params = {
         "title": "PLC Ping",
         "message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
-        "progress": true
+        "progress": true,
+        "cancel_callback": func(): PlcsController.CancelPing()
     }
-    EventBus.confirm_popup_invoked.emit(params)
+    EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
+# Function to show the result of the ping attempt
 func _on_ping_completed(plc_data: PlcData, success: bool) -> void:    
     var params = {
         "title": "Ping Result",
@@ -129,7 +130,6 @@ func _on_ping_completed(plc_data: PlcData, success: bool) -> void:
     }
     
     EventBus.modify_content_popup_invoked.emit(params, func(): pass)
-
 
 # Function to update the name of a PLC item
 func _update_name(new_name: String, plc_index: int) -> void:
@@ -147,3 +147,4 @@ func _update_status(status: Status, plc_index: int) -> void:
             plc_items.set_item_icon_modulate(plc_index, Color.INDIAN_RED)
         Status.UNKNOWN:
             plc_items.set_item_icon_modulate(plc_index, Color.ORANGE)
+#endregion

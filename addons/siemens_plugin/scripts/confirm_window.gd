@@ -4,16 +4,16 @@ extends ConfirmationDialog
 
 @export var progress_bar: ProgressBar
 
+#region Godot Override Methods
 func _ready() -> void:
-	print("Hola")
 	EventBus.confirm_popup_invoked.connect(_show_confirm_popup)
 	EventBus.modify_content_popup_invoked.connect(_modify_content_popup)
 	EventBus.close_confirm_popup.connect(hide)
+#endregion
 
-func _show_confirm_popup(params: Dictionary, callback: Callable):	
-	_modify_content_popup(params, callback)
-	popup_centered()
+#region Private Methods
 
+# Function to modify the content of the confirmation dialog
 func _modify_content_popup(params: Dictionary, callback: Callable):
 	# Fill the elements with params
 	title = params.get("title", "Confirm dialog")
@@ -32,6 +32,9 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 	if cancel_text:
 		get_cancel_button().visible = true
 		get_cancel_button().text = cancel_text
+		var cancel_callback = params.get("cancel_callback", func(): pass)
+		canceled.connect(cancel_callback, CONNECT_ONE_SHOT)
+		# params.get("cancel_callback", cancel_callback).call()
 	else:
 		get_cancel_button().visible = false
 
@@ -40,3 +43,9 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 		callback.call()
 	else:
 		progress_bar.visible = false	
+
+# Function to show the confirmation dialog
+func _show_confirm_popup(params: Dictionary, callback: Callable):	
+	_modify_content_popup(params, callback)
+	popup_centered()
+#endregion

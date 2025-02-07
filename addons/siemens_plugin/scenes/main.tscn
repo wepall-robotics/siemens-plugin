@@ -1,12 +1,12 @@
 [gd_scene load_steps=12 format=3 uid="uid://cwyxf78y08kuf"]
 
-[ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_list.gd" id="1_ekivn"]
+[ext_resource type="Script" uid="uid://d2sggcknfl3lx" path="res://addons/siemens_plugin/scripts/plc_list.gd" id="1_ekivn"]
 [ext_resource type="StyleBox" uid="uid://bw3ee5t74byso" path="res://addons/siemens_plugin/themes/round_header.tres" id="2_a4axe"]
 [ext_resource type="Texture2D" uid="uid://cng2y5nn356ut" path="res://addons/siemens_plugin/icons/Add.svg" id="3_1n8aa"]
-[ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_config.gd" id="4_7tc5y"]
+[ext_resource type="Script" uid="uid://csgptsqa6gxa" path="res://addons/siemens_plugin/scripts/plc_config.gd" id="4_7tc5y"]
 [ext_resource type="Texture2D" uid="uid://46yx057nclcx" path="res://addons/siemens_plugin/icons/Remove.svg" id="4_cdb61"]
 [ext_resource type="Texture2D" uid="uid://bvfu3qaqlb8i8" path="res://addons/siemens_plugin/icons/LinkButton.svg" id="5_aurbo"]
-[ext_resource type="Script" path="res://addons/siemens_plugin/scripts/plc_signals.gd" id="5_xmgbx"]
+[ext_resource type="Script" uid="uid://bhiqk4m6t500b" path="res://addons/siemens_plugin/scripts/plc_signals.gd" id="5_xmgbx"]
 [ext_resource type="Texture2D" uid="uid://k5a2d0o7o5lc" path="res://addons/siemens_plugin/icons/StatusError.svg" id="5_yd0b5"]
 [ext_resource type="Texture2D" uid="uid://dgxa8u5bvugvi" path="res://addons/siemens_plugin/icons/UnlinkButton.svg" id="6_8omwv"]
 [ext_resource type="Texture2D" uid="uid://bepwfcds0g51u" path="res://addons/siemens_plugin/icons/Ping.svg" id="7_1qxu3"]
@@ -46,7 +46,7 @@ size_flags_vertical = 3
 size_flags_stretch_ratio = 0.7
 script = ExtResource("1_ekivn")
 plc_list_container = NodePath("MarginContainer/VBoxContainer")
-add_plc_button = NodePath("MarginContainer/VBoxContainer/HBoxContainer/AddPlcItem")
+add_plc_button = NodePath("MarginContainer/VBoxContainer/HBoxContainer/AddPlc")
 plc_items = NodePath("MarginContainer/VBoxContainer/ScrollContainer/ItemList")
 
 [node name="Background" type="ColorRect" parent="HSplitContainer/VSplitContainer/PlcList"]
@@ -91,27 +91,27 @@ vertical_alignment = 1
 [node name="HBoxContainer" type="HBoxContainer" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="AddPlcItem" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="AddPlc" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Add plc"
 icon = ExtResource("3_1n8aa")
 
-[node name="Button" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="RemovePlc" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Remove plc"
 icon = ExtResource("4_cdb61")
 
-[node name="Button2" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="ConnectPlc" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Connect to plc"
 icon = ExtResource("5_aurbo")
 
-[node name="Button3" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="DisconnectPlc" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Disconnect from plc"
 icon = ExtResource("6_8omwv")
 
-[node name="Button4" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
+[node name="PingPlc" type="Button" parent="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 tooltip_text = "Ping to plc"
 icon = ExtResource("7_1qxu3")
@@ -217,6 +217,7 @@ size_flags_horizontal = 3
 selected = 4
 item_count = 5
 popup/item_0/text = "S7-200"
+popup/item_0/id = 0
 popup/item_1/text = "S7-300"
 popup/item_1/id = 10
 popup/item_2/text = "S7-400"
@@ -307,9 +308,9 @@ item_2/text = "Yo muy bien"
 [node name="ConfirmWindow" parent="." instance=ExtResource("12_ie3kl")]
 visible = false
 
-[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/AddPlcItem" to="HSplitContainer/VSplitContainer/PlcList" method="_on_add_plc_item"]
-[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/Button" to="HSplitContainer/VSplitContainer/PlcList" method="_on_remove_plc_item"]
-[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/Button4" to="HSplitContainer/VSplitContainer/PlcList" method="_on_ping_selected_plc"]
+[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/AddPlc" to="HSplitContainer/VSplitContainer/PlcList" method="_on_add_plc_item"]
+[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/RemovePlc" to="HSplitContainer/VSplitContainer/PlcList" method="_on_remove_plc_item"]
+[connection signal="pressed" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/HBoxContainer/PingPlc" to="HSplitContainer/VSplitContainer/PlcList" method="_on_ping_selected_plc"]
 [connection signal="item_selected" from="HSplitContainer/VSplitContainer/PlcList/MarginContainer/VBoxContainer/ScrollContainer/ItemList" to="HSplitContainer/VSplitContainer/PlcList" method="_on_plc_item_selected"]
 [connection signal="focus_exited" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_focus_exited"]
 [connection signal="text_submitted" from="HSplitContainer/VSplitContainer/PlcConfig/ScrollContainer/Panel/MarginContainer/VBoxContainer/VBoxContainer/Name/LineEdit" to="HSplitContainer/VSplitContainer/PlcConfig" method="_on_name_text_submitted"]

@@ -3,22 +3,31 @@ extends Control
 
 class_name PlcConfig
 
+#region Export Variables
 @export_group("UI Elements")
 @export var name_edit: LineEdit
 @export var cpu_type_option: OptionButton
 @export var ip_edit: LineEdit
 @export var rack_spin: SpinBox
 @export var slot_spin: SpinBox
+#endregion
 
+#region Private Variables
 var _current_plc: PlcData
+#endregion
 
+#region @onready Variables
 @onready var error_icon: Texture2D = preload("res://addons/siemens_plugin/icons/StatusError.svg")
+#endregion
 
+#region Godot Override Methods
 # Function called when the panel is initialized
 func _init():
 	EventBus.plc_selected.connect(_load_plc)
 	EventBus.plc_deselect.connect(_on_plc_deselect)
+#endregion
 
+#region Private Methods
 # Function to load the PLC data into the UI elements
 func _load_plc(plc: PlcData) -> void:
 	_current_plc = plc
@@ -100,3 +109,4 @@ func _show_error_ip_icon(show: bool) -> void:
 		ip_edit.set("right_icon", error_icon)
 	else:
 		ip_edit.set("right_icon", null)
+#endregion
