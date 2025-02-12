@@ -31,11 +31,11 @@ public partial class PlcSignal : Resource
         Bidirectional
     }
 
-    /// <summary>
-    /// Gets or sets the name of the PLC signal.
-    /// </summary>
-    [Export]
-    public string Name { get; set; } = String.Empty;
+    // /// <summary>
+    // /// Gets or sets the name of the PLC signal.
+    // /// </summary>
+    // [Export]
+    // public string Name { get; set; } = String.Empty;
 
     /// <summary>
     /// Gets or sets the data type of the PLC signal.
@@ -70,7 +70,8 @@ public partial class PlcSignal : Resource
     /// <summary>
     /// Gets or sets the component node associated with the PLC signal.
     /// </summary>
-    public Node Component { get; set; } = null;
+    // [Export]
+    // public Node Component { get; set; } = null;
 
     /// <summary>
     /// Gets or sets the property name of the component associated with the PLC signal.
@@ -78,15 +79,15 @@ public partial class PlcSignal : Resource
     [Export]
     public string Property { get; set; } = String.Empty;
 
-    /// <summary>
-    /// Gets or sets the forced value of the PLC signal.
-    /// </summary>
-    [Export]
-    public Variant ForceValue { get; set; }
+    // /// <summary>
+    // /// Gets or sets the forced value of the PLC signal.
+    // /// </summary>
+    // [Export]
+    // public Variant ForceValue { get; set; }
 
-    /// <summary>
-    /// Gets or sets the current value of the PLC signal.
-    /// </summary>
-    [Export]
-    public Variant Value { get; set; }
+    // /// <summary>
+    // /// Gets or sets the current value of the PLC signal.
+    // /// </summary>
+    // [Export]
+    // public Variant Value { get; set; }
 }
