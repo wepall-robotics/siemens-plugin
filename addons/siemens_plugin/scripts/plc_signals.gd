@@ -1,15 +1,36 @@
 @tool
-extends Control
+extends Tree
 
 class_name PlcSignals
 
-var current_plc: PlcData
-var signals_list: Dictionary = {}
+var _root
 
-func load_plc_signals(plc: PlcData) -> void:
-    current_plc = plc
-    _update_signals_view()
+func _ready():
+	clear()
+	_create_headers()
+	_root = create_item()
+	
+func _on_add_signal_pressed():
+	var item = create_item(_root)
+	var row = RowItem.new(item)
+	
+	get_tree().root.add_child(row)
 
-func _update_signals_view() -> void:
-    pass
-    # Implementar vista de señales
+func _create_headers():
+	set_column_title_alignment(0, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(1, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(2, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(3, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(4, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(5, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(6, HORIZONTAL_ALIGNMENT_LEFT)
+	set_column_title_alignment(7, HORIZONTAL_ALIGNMENT_LEFT)
+
+	set_column_title(0, "Name")
+	set_column_title(1, "Type")
+	set_column_title(2, "Address")
+	set_column_title(3, "Component")
+	set_column_title(4, "Property")
+	set_column_title(5, "Comms")
+	set_column_title(6, "Value")
+	set_column_title(7, "Force")

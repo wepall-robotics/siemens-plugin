@@ -30,3 +30,14 @@ project/assembly_name="Siemens-Plugin"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/siemens_plugin/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://addons/siemens_plugin/components/": "red",
+"res://addons/siemens_plugin/data/": "orange",
+"res://addons/siemens_plugin/icons/": "yellow",
+"res://addons/siemens_plugin/scenes/": "blue",
+"res://addons/siemens_plugin/scripts/": "purple",
+"res://addons/siemens_plugin/themes/": "pink"
+}
