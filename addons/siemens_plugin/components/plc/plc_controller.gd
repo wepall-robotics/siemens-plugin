@@ -40,15 +40,21 @@ func _create_command_tools():
 	var plc_commands = PLC_COMMANDS.instantiate()
 	add_custom_control(plc_commands)
 
-## Handles the connect event.
+## Connects to the [b]PLC[/b] and establishes communication.
+## [b]Returns:[/b] [color=#70bafa]bool[/color] - [i]True if the connection is successful, false otherwise.[/i]
 func _connect():
 	print("Connect")
 
-## Handles the disconnect event.
+## Disconnects from the [b]PLC[/b].
+## [b]Parameters:[/b]
+## - [param force]: [color=#70bafa]bool[/color] - If true, forces the disconnection.
+## [b]Returns:[/b] [color=#70bafa]void[/color]
 func _disconnect():
 	print("Disconnect")
 
-## Handles the ping event.
+## Sends a ping to the [b]PLC[/b].
+## [b]Returns:[/b]
+## - [color=#70bafa]string[/color]: The response from the PLC.
 func _ping() -> void:
 	# Validate the IP address
 	print("Ey dale")
@@ -76,7 +82,10 @@ func _ping() -> void:
 	#
 	#EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.Ping(_selected_plc) )
 
-## Handles the online event.
+## Monitors live signals from the [b]PLC[/b].
+## Displays real-time value changes and interactions.
+## [b]Parameters:[/b]
+## - [param duration]: [color=#70bafa]int[/color] - Duration in seconds to monitor signals.
 func _online():
 	print("Online")
 
