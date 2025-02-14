@@ -57,7 +57,10 @@ func _disconnect():
 ## - [color=#70bafa]string[/color]: The response from the PLC.
 func _ping() -> void:
 	# Validate the IP address
-	print("Ey dale")
+	if not _plc.data:
+		print("No hay")
+		return
+		 
 	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
 		var params = {
 			"title": "Invalid IP Address",
@@ -67,8 +70,9 @@ func _ping() -> void:
 			"progress": false
 		}
 		
-		EventBus.confirm_popup_invoked.emit(params, func(): pass)
-		return
+	print ("Ey salta!")
+		#EventBus.confirm_popup_invoked.emit(params, func(): pass)
+		#return
 
 	# IP address is valid, start the ping process
 	#var params = {
