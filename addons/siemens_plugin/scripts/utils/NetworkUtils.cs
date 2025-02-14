@@ -23,4 +23,8 @@ public partial class NetworkUtils : Resource
         }
         return false;
     }
+
+    public static bool Ping(string ip) {
+        return ValidateIP(ip);
+    }
 }

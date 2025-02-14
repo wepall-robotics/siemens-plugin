@@ -4,7 +4,12 @@ extends Node
 #region Plc signals.
 signal ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int)
 signal ping_completed(plc_data: PlcData, success: bool)
-signal ping_started(plc_data: PlcData)
+signal ping_invoked()
+signal connect_invoked()
+signal disconnect_invoked()
+signal online_invoked()
+signal import_invoked()
+signal export_invoked()
 signal plc_added(plc_data: PlcData)
 signal plc_deselect()
 signal plc_removed(plc_data: PlcData)
