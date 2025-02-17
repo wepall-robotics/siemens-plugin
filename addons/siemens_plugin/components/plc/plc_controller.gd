@@ -58,9 +58,8 @@ func _disconnect():
 func _ping() -> void:
 	# Validate the IP address
 	if not _plc.data:
-		print("No hay")
 		return
-		 
+
 	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
 		var params = {
 			"title": "Invalid IP Address",
@@ -70,21 +69,20 @@ func _ping() -> void:
 			"progress": false
 		}
 		
-	print ("Ey salta!")
-		#EventBus.confirm_popup_invoked.emit(params, func(): pass)
-		#return
+		EventBus.confirm_popup_invoked.emit(params, func(): pass)
+		return
 
 	# IP address is valid, start the ping process
-	#var params = {
-		#"title": "PLC Ping",
-		#"message": "Testing connection to PLC...",
-		#"progress": true,
-		#"ok_text": "",  # Hide the OK button
-		#"cancel_text": "Cancel",
-		#"cancel_callback": func(): PlcsController.CancelPing()
-	#}
+	var params = {
+		"title": "PLC Ping",
+		"message": "Testing connection to PLC...",
+		"progress": true,
+		"ok_text": "",  # Hide the OK button
+		"cancel_text": "Cancel",
+		"cancel_callback": func(): pass
+	}
 	#
-	#EventBus.confirm_popup_invoked.emit(params, func(): PlcsController.Ping(_selected_plc) )
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping())
 
 ## Monitors live signals from the [b]PLC[/b].
 ## Displays real-time value changes and interactions.

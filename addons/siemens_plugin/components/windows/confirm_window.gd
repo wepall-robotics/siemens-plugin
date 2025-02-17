@@ -45,7 +45,9 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 		progress_bar.visible = false	
 
 # Function to show the confirmation dialog
-func _show_confirm_popup(params: Dictionary, callback: Callable):	
+func _show_confirm_popup(params: Dictionary, callback: Callable):
 	_modify_content_popup(params, callback)
-	popup_centered()
+	if is_inside_tree():
+		popup_centered()
+		
 #endregion

@@ -5,7 +5,6 @@
 [node name="ConfirmWindow" type="ConfirmationDialog" node_paths=PackedStringArray("progress_bar")]
 initial_position = 2
 size = Vector2i(285, 158)
-visible = true
 unresizable = true
 script = ExtResource("1_g327h")
 progress_bar = NodePath("ProgressBar")
