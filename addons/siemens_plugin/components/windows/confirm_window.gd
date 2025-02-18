@@ -34,7 +34,6 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 		get_cancel_button().text = cancel_text
 		var cancel_callback = params.get("cancel_callback", func(): pass)
 		canceled.connect(cancel_callback, CONNECT_ONE_SHOT)
-		# params.get("cancel_callback", cancel_callback).call()
 	else:
 		get_cancel_button().visible = false
 

@@ -16,16 +16,21 @@ func _can_handle(object) -> bool:
 func _connect_event_bus_signals() -> void:
 	if not EventBus.ping_invoked.is_connected(_ping):
 		EventBus.ping_invoked.connect(_ping, CONNECT_PERSIST)
+		EventBus.ping_invoked.connect(_ping)
 	if not EventBus.connect_invoked.is_connected(_connect):
-		EventBus.connect_invoked.connect(_connect, CONNECT_PERSIST)
+		EventBus.connect_invoked.connect(_connect)
 	if not EventBus.disconnect_invoked.is_connected(_disconnect):
-		EventBus.disconnect_invoked.connect(_disconnect, CONNECT_PERSIST)
+		EventBus.disconnect_invoked.connect(_disconnect)
 	if not EventBus.online_invoked.is_connected(_online):
-		EventBus.online_invoked.connect(_online, CONNECT_PERSIST)
+		EventBus.online_invoked.connect(_online)
 	if not EventBus.import_invoked.is_connected(_import):
-		EventBus.import_invoked.connect(_import, CONNECT_PERSIST)
+		EventBus.import_invoked.connect(_import)
 	if not EventBus.export_invoked.is_connected(_export):
-		EventBus.export_invoked.connect(_export, CONNECT_PERSIST)
+		EventBus.export_invoked.connect(_export)
+	if not EventBus.ping_attempt_failed.is_connected(_on_ping_attempt_failed):
+		EventBus.ping_attempt_failed.connect(_on_ping_attempt_failed)
+	if not EventBus.ping_completed.is_connected(_on_ping_completed):
+		EventBus.ping_completed.connect(_on_ping_completed)
 
 func _parse_category(object, category):
 	if category=="PlcCommands":
@@ -61,6 +66,7 @@ func _ping() -> void:
 		return
 
 	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
+		
 		var params = {
 			"title": "Invalid IP Address",
 			"message": "The IP address is invalid. Please enter a valid IP address.",
@@ -79,10 +85,33 @@ func _ping() -> void:
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func(): pass
+		"cancel_callback": func(): NetworkUtils.CancelPing()
 	}
-	#
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping())
+
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.ip_address, EventBus))
+
+# Function to modify content of the confirmation dialog
+# when a ping attempt fails
+func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> void:
+	var params = {
+		"title": "PLC Ping",
+		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
+		"progress": true,
+		"cancel_callback": func():  NetworkUtils.CancelPing()
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+
+# Function to show the result of the ping attempt
+func _on_ping_completed(ip: String, success: bool) -> void:    
+	var params = {
+		"title": "Ping Result",
+		"message": "Connection " + ("successful" if success else "failed after %d attempts" % 4) + " to PLC at " + ip,
+		"ok_text": "OK",
+		"cancel_text": "",
+		"progress": false
+	}
+	
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 ## Monitors live signals from the [b]PLC[/b].
 ## Displays real-time value changes and interactions.

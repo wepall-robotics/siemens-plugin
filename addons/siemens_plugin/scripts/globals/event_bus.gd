@@ -2,8 +2,8 @@
 extends Node
 
 #region Plc signals.
-signal ping_attempt_failed(plc_data: PlcData, attempt: int, max_attempts: int)
-signal ping_completed(plc_data: PlcData, success: bool)
+signal ping_attempt_failed(ip: String, attempt: int, max_attempts: int)
+signal ping_completed(ip: String, success: bool)
 signal ping_invoked()
 signal connect_invoked()
 signal disconnect_invoked()
