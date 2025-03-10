@@ -9,7 +9,7 @@ func _enter_tree():
 	add_inspector_plugin(plugin)
 
 func _enable_plugin():
-	var base_control = get_editor_interface().get_base_control()
+	var base_control = EditorInterface.get_base_control()
 	add_autoload_singleton("Globals", "res://addons/siemens_plugin/scripts/globals/globals.gd")
 
 	popup_window = load("res://addons/siemens_plugin/components/windows/confirm_window.tscn").instantiate()

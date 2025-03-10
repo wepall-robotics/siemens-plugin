@@ -4,6 +4,7 @@ using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Godot;
+using S7.Net;
 
 [GlobalClass]
 public partial class NetworkUtils : RefCounted
@@ -32,6 +33,67 @@ public partial class NetworkUtils : RefCounted
 
     #region Public API
     /// <summary>
+    /// Connects to the PLC and establishes communication.
+    /// </summary>
+    /// <param name="plc">The PLC object containing connection data.</param>
+    /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
+    public static async void Connect(Variant plc, GodotObject eventBus = null)
+    {
+        GD.Print("Connecting to PLC...", plc);
+
+        if (plc.VariantType != Variant.Type.Dictionary)
+        {
+            eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
+            return;
+        }
+
+        var plcData = plc.AsGodotDictionary();
+
+        if (!plcData.ContainsKey("ip_address") || !plcData.ContainsKey("type") ||
+            !plcData.ContainsKey("rack") || !plcData.ContainsKey("slot"))
+        {
+            eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
+            return;
+        }
+
+        string ipAddress = plcData["ip_address"].AsString();
+        short rack = (short)plcData["rack"].AsInt64();
+        short slot = (short)plcData["slot"].AsInt64();
+        CpuType type = (CpuType)plcData["type"].AsInt64();
+
+        using Plc s7plc = new Plc(type, ipAddress, rack, slot);
+        CancellationTokenSource cts = new CancellationTokenSource();
+        var success = false;
+
+        try
+        {
+            await s7plc.OpenAsync(cts.Token).WaitAsync(cts.Token);
+            success = true;
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr("Failed to connect to PLC:", e.Message);
+        }
+        finally
+        {
+            if (success)
+            {
+                if (eventBus != null)
+                {
+                    eventBus.EmitSignal("plc_connected", plc);
+                }
+            }
+            else
+            {
+                if (eventBus != null)
+                {
+                    eventBus.EmitSignal("plc_connection_failed", plc, "Failed to connect to PLC.");
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Validates an IP address. The validation is done by parsing the IP as an IPv4 address and
     /// verifying that the parsed address matches the given string exactly.
     /// </summary>
@@ -56,7 +118,7 @@ public partial class NetworkUtils : RefCounted
     /// </para>
     /// </summary>
     /// <param name="ip">The IP address to ping.</param>
-    /// /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
+    /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
     public static async void Ping(string ip, GodotObject eventBus = null)
     {
         var success = false;

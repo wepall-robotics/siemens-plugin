@@ -5,16 +5,13 @@ extends Node
 signal ping_attempt_failed(ip: String, attempt: int, max_attempts: int)
 signal ping_completed(ip: String, success: bool)
 signal ping_invoked()
-signal connect_invoked()
-signal disconnect_invoked()
+signal plc_connect_invoked(plc: PlcData)
+signal plc_connection_failed(plc: Dictionary, error: String)
+signal plc_connected(plc: PlcData)
+signal plc_disconnect_invoked()
 signal online_invoked()
 signal import_invoked()
 signal export_invoked()
-signal plc_added(plc_data: PlcData)
-signal plc_deselect()
-signal plc_removed(plc_data: PlcData)
-signal plc_selected(plc_data : PlcData)
-signal plc_updated(plc_data: PlcData, property: String)
 #endregion
 
 #region Windows and Popups signals.

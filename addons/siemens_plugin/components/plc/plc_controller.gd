@@ -15,12 +15,15 @@ func _can_handle(object) -> bool:
 ## Method to connect [b]EventBus signals[/b] to their respective handlers.
 func _connect_event_bus_signals() -> void:
 	if not EventBus.ping_invoked.is_connected(_ping):
-		EventBus.ping_invoked.connect(_ping, CONNECT_PERSIST)
 		EventBus.ping_invoked.connect(_ping)
-	if not EventBus.connect_invoked.is_connected(_connect):
-		EventBus.connect_invoked.connect(_connect)
-	if not EventBus.disconnect_invoked.is_connected(_disconnect):
-		EventBus.disconnect_invoked.connect(_disconnect)
+	if not EventBus.plc_connect_invoked.is_connected(_connect_plc):
+		EventBus.plc_connect_invoked.connect(_connect_plc)
+	if not EventBus.plc_connection_failed.is_connected(_on_plc_connection_failed):
+		EventBus.plc_connection_failed.connect(_on_plc_connection_failed)
+	if not EventBus.plc_connected.is_connected(_on_plc_connected):
+		EventBus.plc_connected.connect(_on_plc_connected)
+	if not EventBus.plc_disconnect_invoked.is_connected(_disconnect):
+		EventBus.plc_disconnect_invoked.connect(_disconnect)
 	if not EventBus.online_invoked.is_connected(_online):
 		EventBus.online_invoked.connect(_online)
 	if not EventBus.import_invoked.is_connected(_import):
@@ -47,8 +50,34 @@ func _create_command_tools():
 
 ## Connects to the [b]PLC[/b] and establishes communication.
 ## [b]Returns:[/b] [color=#70bafa]bool[/color] - [i]True if the connection is successful, false otherwise.[/i]
-func _connect():
-	print("Connect")
+func _connect_plc():
+	# Validate the IP address
+	if not _plc.data:
+		return
+	
+	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
+		
+		var params = {
+			"title": "Invalid IP Address",
+			"message": "The IP address is invalid. Please enter a valid IP address.",
+			"ok_text": "OK",
+			"cancel_text": "",
+			"progress": false
+		}
+		
+		EventBus.confirm_popup_invoked.emit(params, func(): pass)
+		return
+	
+	# IP address is valid, start the connection process.
+	var params = {
+		"title": "Connection",
+		"message": "Connecting to PLC...",
+		"progress": true,
+		"ok_text": "",  # Hide the OK button
+		"cancel_text": "Cancel"
+	}
+
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Connect(_plc.data.to_dict(), EventBus))
 
 ## Disconnects from the [b]PLC[/b].
 ## [b]Parameters:[/b]
@@ -89,6 +118,28 @@ func _ping() -> void:
 	}
 
 	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.ip_address, EventBus))
+
+# Function to modify content of the confirmation dialog
+# when a connection to plc is accomplish.
+func _on_plc_connected(plcData) -> void:
+	var params = {
+		"title": "PLC connection successful",
+		"message": "Eyyyy broooother.",
+		"progress": false,
+		#"cancel_callback": func(): pass
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+	
+# Function to modify content of the confirmation dialog
+# when a connection to plc failed.
+func _on_plc_connection_failed(plcData: Dictionary, error: String) -> void:
+	var params = {
+		"title": "Plc connection failed",
+		"message": error,
+		"progress": false,
+		#"cancel_callback": func(): pass
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 # Function to modify content of the confirmation dialog
 # when a ping attempt fails

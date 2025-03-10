@@ -29,7 +29,7 @@ enum CpuType {
 		emit_changed()
 
 ## The type of the CPU used by the [b]PLC[/b].
-@export_enum("S7-200:0", "LOGO-0BA8:1", "S7-200-SMART:2", "S7-300:10", "S7-400:20", "S7-1200:30", "S7_1500:40")
+@export_enum("S7-200:0", "LOGO-0BA8:1", "S7-200-SMART:2", "S7-300:10", "S7-400:20", "S7-1200:30", "S7-1500:40")
 var type: int:
 	get:
 		return type
@@ -51,3 +51,13 @@ var type: int:
 		return slot
 	set(value):
 		slot = value
+
+func to_dict() -> Dictionary:
+	var result = {
+		"ip_address": ip_address,
+		"type": type,
+		"rack": rack,
+		"slot": slot
+	}
+
+	return result
