@@ -1,5 +1,5 @@
 @tool
-class_name Plc
+class_name PlcNode
 extends Node
 
 ## Enum representing the connection status of the PLC.
@@ -12,7 +12,7 @@ enum Status {
 ## This property holds the configuration for a [b]Programmable Logic Controller[/b].
 ## It is of type [code]PlcData[/code], which likely encapsulates essential [b]PLC[/b] settings such as
 ## [code]IP address[/code], [code]port numbers[/code], and other communication parameters.
-@export var data: PlcData:
+@export var data: Plc:
 	get: return data
 	set(value):
 		data = value
@@ -34,12 +34,15 @@ enum Status {
 ## Its purpose is to control category header placement in the inspector.
 @export var ghost_prop: bool
 
+# func _ready():
+# 	data = PLC_SCRIPT.new("", 10, 0, 1)
+
 # Override function to provide configuration warnings for the node.
 func _get_configuration_warnings():
 	if not data:
 		return ["PLC configuration required:\n1. Select this node in the Scene tree.\n2. In the Inspector, find the data property.\n3. Assign or create a new PLC configuration."]
 	else:
-		if data.ip_address.is_empty() or !NetworkUtils.ValidateIP(data.ip_address):
+		if data.IP.is_empty() or !NetworkUtils.ValidateIP(data.IP):
 			return ["Invalid IP address:\n1. Select this node in the Scene tree.\n2. In the Inspector, expand the data property.\n3. Enter a valid IP address in the field."]
 	return []
 

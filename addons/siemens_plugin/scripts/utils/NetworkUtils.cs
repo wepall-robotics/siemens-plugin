@@ -37,37 +37,23 @@ public partial class NetworkUtils : RefCounted
     /// </summary>
     /// <param name="plc">The PLC object containing connection data.</param>
     /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
-    public static async void Connect(Variant plc, GodotObject eventBus = null)
+    public static async void Connect(Plc plc, GodotObject eventBus = null)
     {
-        GD.Print("Connecting to PLC...", plc);
-
-        if (plc.VariantType != Variant.Type.Dictionary)
+        if (plc == null)
         {
-            eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
+            if (eventBus != null)
+            {
+                eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
+            }
             return;
         }
 
-        var plcData = plc.AsGodotDictionary();
-
-        if (!plcData.ContainsKey("ip_address") || !plcData.ContainsKey("type") ||
-            !plcData.ContainsKey("rack") || !plcData.ContainsKey("slot"))
-        {
-            eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
-            return;
-        }
-
-        string ipAddress = plcData["ip_address"].AsString();
-        short rack = (short)plcData["rack"].AsInt64();
-        short slot = (short)plcData["slot"].AsInt64();
-        CpuType type = (CpuType)plcData["type"].AsInt64();
-
-        using Plc s7plc = new Plc(type, ipAddress, rack, slot);
         CancellationTokenSource cts = new CancellationTokenSource();
         var success = false;
 
         try
         {
-            await s7plc.OpenAsync(cts.Token).WaitAsync(cts.Token);
+            await plc.OpenAsync(cts.Token).WaitAsync(cts.Token);
             success = true;
         }
         catch (Exception e)

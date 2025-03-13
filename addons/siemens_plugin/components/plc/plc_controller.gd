@@ -2,15 +2,15 @@
 extends EditorInspectorPlugin
 
 const PLC_COMMANDS : PackedScene = preload("res://addons/siemens_plugin/components/controls/plc_commands.tscn")
-var _plc: Plc
+var _plc: PlcNode
 
 # Determines if the given object can be handled by this controller.
 func _can_handle(object) -> bool:
-	if object is Plc:
+	if object is PlcNode:
 		_plc = object
 		_connect_event_bus_signals()
 
-	return object is Plc
+	return object is PlcNode
 
 ## Method to connect [b]EventBus signals[/b] to their respective handlers.
 func _connect_event_bus_signals() -> void:
@@ -54,9 +54,8 @@ func _connect_plc():
 	# Validate the IP address
 	if not _plc.data:
 		return
-	
-	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
-		
+
+	if !NetworkUtils.ValidateIP(_plc.data.IP):
 		var params = {
 			"title": "Invalid IP Address",
 			"message": "The IP address is invalid. Please enter a valid IP address.",
@@ -67,7 +66,7 @@ func _connect_plc():
 		
 		EventBus.confirm_popup_invoked.emit(params, func(): pass)
 		return
-	
+
 	# IP address is valid, start the connection process.
 	var params = {
 		"title": "Connection",
@@ -77,7 +76,7 @@ func _connect_plc():
 		"cancel_text": "Cancel"
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Connect(_plc.data.to_dict(), EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Connect(_plc.data, EventBus))
 
 ## Disconnects from the [b]PLC[/b].
 ## [b]Parameters:[/b]
@@ -93,8 +92,7 @@ func _ping() -> void:
 	# Validate the IP address
 	if not _plc.data:
 		return
-
-	if !NetworkUtils.ValidateIP(_plc.data.ip_address):
+	if !NetworkUtils.ValidateIP(_plc.data.IP):
 		
 		var params = {
 			"title": "Invalid IP Address",
@@ -117,27 +115,24 @@ func _ping() -> void:
 		"cancel_callback": func(): NetworkUtils.CancelPing()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.ip_address, EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.IP, EventBus))
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc is accomplish.
 func _on_plc_connected(plcData) -> void:
-	var params = {
-		"title": "PLC connection successful",
-		"message": "Eyyyy broooother.",
-		"progress": false,
-		#"cancel_callback": func(): pass
-	}
-	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
-	
+	_plc.status = PlcNode.Status.CONNECTED
+	EventBus.close_confirm_popup.emit()
+	print("Plc is connected.")
+
 # Function to modify content of the confirmation dialog
 # when a connection to plc failed.
-func _on_plc_connection_failed(plcData: Dictionary, error: String) -> void:
+func _on_plc_connection_failed(plcData: Plc, error: String) -> void:
 	var params = {
 		"title": "Plc connection failed",
 		"message": error,
 		"progress": false,
-		#"cancel_callback": func(): pass
+		"ok_text": "Exit",
+		"cancel_text": "",
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 

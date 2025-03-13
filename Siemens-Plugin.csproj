@@ -4,7 +4,4 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>SiemensPlugin</RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="S7netplus" Version="0.20.0" />
-  </ItemGroup>
 </Project>
