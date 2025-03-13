@@ -73,7 +73,8 @@ func _connect_plc():
 		"message": "Connecting to PLC...",
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
-		"cancel_text": "Cancel"
+		"cancel_text": "Cancel",
+		"cancel_callback": func():  NetworkUtils.CancelRequest()
 	}
 
 	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Connect(_plc.data, EventBus))
@@ -112,7 +113,7 @@ func _ping() -> void:
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func(): NetworkUtils.CancelPing()
+		"cancel_callback": func(): NetworkUtils.CancelRequest()
 	}
 
 	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.IP, EventBus))
@@ -143,7 +144,7 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 		"title": "PLC Ping",
 		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
 		"progress": true,
-		"cancel_callback": func():  NetworkUtils.CancelPing()
+		"cancel_callback": func():  NetworkUtils.CancelRequest()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
