@@ -7,7 +7,7 @@ extends ConfirmationDialog
 #region Godot Override Methods
 func _ready() -> void:
 	EventBus.confirm_popup_invoked.connect(_show_confirm_popup)
-	EventBus.modify_content_popup_invoked.connect(_modify_content_popup)
+	#EventBus.modify_content_popup_invoked.connect(_modify_content_popup)
 	EventBus.close_confirm_popup.connect(hide)
 #endregion
 
@@ -24,7 +24,7 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 		get_ok_button().visible = true
 		get_ok_button().text = ok_text
 		# Connect confirmation button
-		confirmed.connect(callback, CONNECT_ONE_SHOT)
+		#confirmed.connect(callback, CONNECT_ONE_SHOT)
 	else:
 		get_ok_button().visible = false
 
@@ -41,10 +41,11 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 		progress_bar.visible = true
 		callback.call()
 	else:
-		progress_bar.visible = false	
+		progress_bar.visible = false
 
 # Function to show the confirmation dialog
 func _show_confirm_popup(params: Dictionary, callback: Callable):
+	print("Ventana y callback ", callback)
 	_modify_content_popup(params, callback)
 	if is_inside_tree():
 		popup_centered()

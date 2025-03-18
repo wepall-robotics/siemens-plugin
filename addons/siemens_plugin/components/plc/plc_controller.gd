@@ -122,8 +122,8 @@ func _ping() -> void:
 # when a connection to plc is accomplish.
 func _on_plc_connected(plcData) -> void:
 	_plc.status = PlcNode.Status.CONNECTED
+	print("Plc is Connected.")
 	EventBus.close_confirm_popup.emit()
-	print("Plc is connected.")
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc failed.
@@ -135,7 +135,7 @@ func _on_plc_connection_failed(plcData: Plc, error: String) -> void:
 		"ok_text": "Exit",
 		"cancel_text": "",
 	}
-	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+	EventBus.confirm_popup_invoked.emit(params, func(): pass)
 
 # Function to modify content of the confirmation dialog
 # when a ping attempt fails
@@ -146,10 +146,10 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 		"progress": true,
 		"cancel_callback": func():  NetworkUtils.CancelRequest()
 	}
-	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+	EventBus.confirm_popup_invoked.emit(params, func(): pass)
 
 # Function to show the result of the ping attempt
-func _on_ping_completed(ip: String, success: bool) -> void:    
+func _on_ping_completed(ip: String, success: bool) -> void:
 	var params = {
 		"title": "Ping Result",
 		"message": "Connection " + ("successful" if success else "failed after %d attempts" % 4) + " to PLC at " + ip,
@@ -158,7 +158,7 @@ func _on_ping_completed(ip: String, success: bool) -> void:
 		"progress": false
 	}
 	
-	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+	EventBus.confirm_popup_invoked.emit(params, func(): pass)
 
 ## Monitors live signals from the [b]PLC[/b].
 ## Displays real-time value changes and interactions.

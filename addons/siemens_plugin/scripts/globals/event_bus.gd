@@ -17,5 +17,5 @@ signal export_invoked()
 #region Windows and Popups signals.
 signal close_confirm_popup
 signal confirm_popup_invoked(params: Dictionary, callback: Callable)
-signal modify_content_popup_invoked(params: Dictionary, callback: Callable)
+#signal modify_content_popup_invoked(params: Dictionary, callback: Callable)
 #endregion

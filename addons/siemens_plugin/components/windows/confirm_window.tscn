@@ -6,6 +6,7 @@
 initial_position = 2
 size = Vector2i(285, 158)
 unresizable = true
+popup_window = true
 script = ExtResource("1_g327h")
 progress_bar = NodePath("ProgressBar")
 
