@@ -49,12 +49,12 @@ public partial class NetworkUtils : RefCounted
             return;
         }
 
-        _currentCts = new CancellationTokenSource();
+        CancellationTokenSource cts = new CancellationTokenSource();
         var success = false;
 
         try
         {
-            await plc.OpenAsync(_currentCts.Token).WaitAsync(_currentCts.Token);
+            await plc.OpenAsync(cts.Token).WaitAsync(cts.Token);
             success = true;
         }
         catch (Exception e)
@@ -151,7 +151,7 @@ public partial class NetworkUtils : RefCounted
         finally
         {
             eventBus?.EmitSignal("ping_completed", ip, success);
-            CancelRequest();
+            CancelPing();
         }
     }
 
@@ -161,7 +161,7 @@ public partial class NetworkUtils : RefCounted
     /// This method attempts to cancel the token source associated with the ping operation.
     /// It safely handles the case where the token source has already been disposed.
     /// /// </summary>
-    public static void CancelRequest()
+    public static void CancelPing()
     {
         try
         {
