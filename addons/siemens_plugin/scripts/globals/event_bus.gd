@@ -12,6 +12,13 @@ signal plc_disconnect_invoked()
 signal online_invoked()
 signal import_invoked()
 signal export_invoked()
+signal plc_connection_attempt(attempt: int, max_attempts: int)
+signal plc_connection_cancelled(plc: Plc)
+signal plc_connection_attempt_failed(plc: Plc, details: String)
+signal plc_connection_lost(plc: Plc)
+signal ping_attempt(ip: String, attempt: int, max_attempts: int)
+signal ping_cancelled(ip: String)
+signal ping_error(ip: String)
 #endregion
 
 #region Windows and Popups signals.

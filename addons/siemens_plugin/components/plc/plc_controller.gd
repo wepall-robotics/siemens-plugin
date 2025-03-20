@@ -34,6 +34,10 @@ func _connect_event_bus_signals() -> void:
 		EventBus.ping_attempt_failed.connect(_on_ping_attempt_failed)
 	if not EventBus.ping_completed.is_connected(_on_ping_completed):
 		EventBus.ping_completed.connect(_on_ping_completed)
+	if not EventBus.plc_connection_attempt.is_connected(_on_plc_connection_attempt):
+		EventBus.plc_connection_attempt.connect(_on_plc_connection_attempt)
+	if not EventBus.plc_connection_lost.is_connected(_on_plc_connection_lost):
+		EventBus.plc_connection_lost.connect(_on_plc_connection_lost)
 
 func _parse_category(object, category):
 	if category=="PlcCommands":
@@ -46,6 +50,7 @@ func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wi
 ## Creates command tools and adds them as custom controls.
 func _create_command_tools():
 	var plc_commands = PLC_COMMANDS.instantiate()
+	plc_commands.set_up(_plc)
 	add_custom_control(plc_commands)
 
 ## Connects to the [b]PLC[/b] and establishes communication.
@@ -74,17 +79,27 @@ func _connect_plc():
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func():  NetworkUtils.CancelRequest()
+		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Connect(_plc.data, EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.ConnectPlc(_plc.data, EventBus))
+
+func _on_plc_connection_attempt(attempt: int, max_attempts: int):
+	var params = {
+		"title": "Connecting to PLC",
+		"message": "Attempt %d/%d: Establishing connection..." % [attempt, max_attempts],
+		"progress": true,
+		"cancel_text": "Cancel",
+		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 ## Disconnects from the [b]PLC[/b].
 ## [b]Parameters:[/b]
 ## - [param force]: [color=#70bafa]bool[/color] - If true, forces the disconnection.
 ## [b]Returns:[/b] [color=#70bafa]void[/color]
 func _disconnect():
-	print("Disconnect")
+	_plc.status = PlcNode.Status.DISCONNECTED
 
 ## Sends a ping to the [b]PLC[/b].
 ## [b]Returns:[/b]
@@ -113,17 +128,37 @@ func _ping() -> void:
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func(): NetworkUtils.CancelRequest()
+		"cancel_callback": func(): NetworkUtils.CancelAllOperations()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.Ping(_plc.data.IP, EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.PingPlc(_plc.data.IP, EventBus))
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc is accomplish.
-func _on_plc_connected(plcData) -> void:
+func _on_plc_connected(plcData):
 	_plc.status = PlcNode.Status.CONNECTED
+	print("Plc connected.")
 	EventBus.close_confirm_popup.emit()
-	print("Plc is connected.")
+	
+	var params = {
+		"title": "Connection Successful",
+		"message": "PLC connected successfully!",
+		"ok_text": "OK",
+		"progress": false
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+
+func _on_plc_connection_lost(plcData):
+	print("Connection lost.")
+	_plc.status = PlcNode.Status.DISCONNECTED
+	
+	var params = {
+		"title": "Connection Lost",
+		"message": "The connection to the PLC was lost. Attempting to reconnect...",
+		"progress": true,
+		"cancel_text": "Cancel"
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc failed.
@@ -144,7 +179,7 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 		"title": "PLC Ping",
 		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
 		"progress": true,
-		"cancel_callback": func():  NetworkUtils.CancelRequest()
+		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 

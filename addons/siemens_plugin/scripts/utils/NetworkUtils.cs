@@ -10,81 +10,24 @@ using S7.Net;
 public partial class NetworkUtils : RefCounted
 {
     #region Constants
-    /// <summary>
-    /// The maximum number of ping attempts to make before giving up.
-    /// </summary>
     const int MAX_PING_ATTEMPTS = 4;
-    /// <summary>
-    /// The timeout in milliseconds for each ping attempt.
-    /// </summary>
     const int PING_TIMEOUT = 1000;
-    /// <summary>
-    /// The base delay in milliseconds between retry attempts.
-    /// </summary>
     const int RETRY_BASE_DELAY = 500;
+    const int DEFAULT_MONITOR_INTERVAL = 5000;
     #endregion
 
-    #region Private Variables
+    #region Internal State
     private static CancellationTokenSource _currentCts;
-    #endregion
-
-    #region Exports Variables
+    private static CancellationTokenSource _monitoringCts;
+    private static Plc _activePlc;
     #endregion
 
     #region Public API
-    /// <summary>
-    /// Connects to the PLC and establishes communication.
-    /// </summary>
-    /// <param name="plc">The PLC object containing connection data.</param>
-    /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
-    public static async void Connect(Plc plc, GodotObject eventBus = null)
+    public static void ConnectPlc(Plc plc, GodotObject eventBus)
     {
-        if (plc == null)
-        {
-            if (eventBus != null)
-            {
-                eventBus.EmitSignal("plc_connection_failed", plc, "Invalid PLC data.");
-            }
-            return;
-        }
-
-        _currentCts = new CancellationTokenSource();
-        var success = false;
-
-        try
-        {
-            await plc.OpenAsync(_currentCts.Token).WaitAsync(_currentCts.Token);
-            success = true;
-        }
-        catch (Exception e)
-        {
-            GD.PrintErr("Failed to connect to PLC:", e.Message);
-        }
-        finally
-        {
-            if (success)
-            {
-                if (eventBus != null)
-                {
-                    eventBus.EmitSignal("plc_connected", plc);
-                }
-            }
-            else
-            {
-                if (eventBus != null)
-                {
-                    eventBus.EmitSignal("plc_connection_failed", plc, "Failed to connect to PLC.");
-                }
-            }
-        }
+        _ = ConnectAndMonitorInternal(plc, eventBus, maxConnectRetries: 3);
     }
 
-    /// <summary>
-    /// Validates an IP address. The validation is done by parsing the IP as an IPv4 address and
-    /// verifying that the parsed address matches the given string exactly.
-    /// </summary>
-    /// <param name="ip">The IP address to validate.</param>
-    /// <returns><c>true</c> if the IP is valid, <c>false</c> otherwise.</returns>
     public static bool ValidateIP(string ip)
     {
         return IPAddress.TryParse(ip, out var address)
@@ -92,82 +35,167 @@ public partial class NetworkUtils : RefCounted
             && address.ToString() == ip;
     }
 
-    /// <summary>
-    /// Pings the PLC using the given IP address.
-    /// The function will attempt to ping the PLC up to MAX_PING_ATTEMPTS times.
-    /// If the ping is successful, the function will emit the "ping_completed" signal
-    /// with the given IP address and a value of true. If all attempts fail, the
-    /// function will emit the "ping_completed" signal with the given IP address and
-    /// a value of false.
-    /// <para>
-    /// The function may be cancelled using the CancelPing function.
-    /// </para>
-    /// </summary>
-    /// <param name="ip">The IP address to ping.</param>
-    /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
-    public static async void Ping(string ip, GodotObject eventBus = null)
+    public static void PingPlc(string ip, GodotObject eventBus)
     {
-        var success = false;
-
-        if (!ValidateIP(ip)) return;
-
-        _currentCts = new CancellationTokenSource();
-        using var ping = new Ping();
-
-        try
-        {
-            for (int attempt = 1; attempt <= MAX_PING_ATTEMPTS; attempt++)
-            {
-                try
-                {
-                    var reply = await ping.SendPingAsync(ip, PING_TIMEOUT)
-                        .WaitAsync(_currentCts.Token);
-
-                    if (reply.Status == IPStatus.Success)
-                    {
-                        success = true;
-                        break;
-                    }
-
-                    if (attempt < MAX_PING_ATTEMPTS)
-                    {
-                        eventBus?.EmitSignal("ping_attempt_failed", ip, attempt + 1, MAX_PING_ATTEMPTS);
-                        await Task.Delay(RETRY_BASE_DELAY * attempt, _currentCts.Token);
-                    }
-                }
-                catch (PingException) when (attempt == MAX_PING_ATTEMPTS)
-                {
-                    success = false;
-                }
-            }
-            return;
-        }
-        catch (TaskCanceledException)
-        {
-            return;
-        }
-        finally
-        {
-            eventBus?.EmitSignal("ping_completed", ip, success);
-            CancelRequest();
-        }
+        _ = PingInternalWrapper(ip, eventBus);
     }
 
-    /// <summary>
-    /// Cancels the ongoing ping operation if it has not been cancelled yet.
-    /// 
-    /// This method attempts to cancel the token source associated with the ping operation.
-    /// It safely handles the case where the token source has already been disposed.
-    /// /// </summary>
-    public static void CancelRequest()
+    public static void CancelAllOperations()
     {
-        try
-        {
-            if (_currentCts != null && !_currentCts.IsCancellationRequested)
-                _currentCts.Cancel();
-        }
-        catch (ObjectDisposedException) { }
+        _currentCts?.Cancel();
+        _monitoringCts?.Cancel();
     }
     #endregion
 
+    #region Core Implementation
+    private static async Task ConnectAndMonitorInternal(Plc plc, GodotObject eventBus, int maxConnectRetries)
+    {
+        CancelAllOperations();
+        _currentCts = new CancellationTokenSource();
+        _activePlc = plc;
+
+        try
+        {
+            bool success = false;
+            int attempts = 0;
+
+            while (!success && attempts < maxConnectRetries)
+            {
+                attempts++;
+                eventBus.CallDeferred("emit_signal", "plc_connection_attempt", attempts, maxConnectRetries);
+
+                // Verificación mejorada de estado
+                bool plcAvailable = await CheckPlcAvailability(plc.IP, eventBus);
+
+                if (plcAvailable)
+                {
+                    try
+                    {
+                        await plc.OpenAsync(_currentCts.Token);
+                        if (plc.IsConnected)
+                        {
+                            success = true;
+                            eventBus.EmitSignal("plc_connected", plc);
+                            StartMonitoring(plc, eventBus);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        GD.PrintErr($"Connection error: {e.Message}");
+                        eventBus.EmitSignal("plc_connection_attempt_failed",
+                            plc, $"Attempt {attempts}/{maxConnectRetries}: {e.Message}");
+                    }
+                }
+
+                await Task.Delay(RETRY_BASE_DELAY);
+            }
+
+            if (!success)
+            {
+                eventBus.CallDeferred("emit_signal", "plc_connection_failed", plc, $"Failed after {attempts} attempts");
+            }
+        }
+        catch (TaskCanceledException)
+        {
+            eventBus.EmitSignal("plc_connection_cancelled", plc);
+        }
+    }
+
+    private static async Task<bool> CheckPlcAvailability(string ip, GodotObject eventBus)
+    {
+        try
+        {
+            using (var ping = new Ping())
+            {
+                var reply = await ping.SendPingAsync(ip, PING_TIMEOUT);
+                return reply.Status == IPStatus.Success;
+            }
+        }
+        catch
+        {
+            eventBus.EmitSignal("plc_connection_attempt_failed",
+                _activePlc, "PLC not responding to ping");
+            return false;
+        }
+    }
+
+    private static async Task PingInternalWrapper(string ip, GodotObject eventBus)
+    {
+        CancelAllOperations();
+        _currentCts = new CancellationTokenSource();
+
+        try
+        {
+            bool success = false;
+            for (int attempt = 1; attempt <= MAX_PING_ATTEMPTS; attempt++)
+            {
+                eventBus.EmitSignal("ping_attempt", ip, attempt, MAX_PING_ATTEMPTS);
+
+                if (await AttemptPing(ip, attempt, eventBus))
+                {
+                    success = true;
+                    break;
+                }
+            }
+            eventBus.EmitSignal("ping_completed", ip, success);
+        }
+        catch (TaskCanceledException)
+        {
+            eventBus.EmitSignal("ping_cancelled", ip);
+        }
+    }
+    #endregion
+
+    #region Helper Methods
+    private static async Task<bool> IsPingable(string ip, GodotObject eventBus)
+    {
+        using var ping = new Ping();
+        try
+        {
+            var reply = await ping.SendPingAsync(ip, PING_TIMEOUT);
+            return reply.Status == IPStatus.Success;
+        }
+        catch
+        {
+            eventBus.EmitSignal("ping_error", ip);
+            return false;
+        }
+    }
+
+    private static async Task<bool> AttemptPing(string ip, int attempt, GodotObject eventBus)
+    {
+        using var ping = new Ping();
+        try
+        {
+            var reply = await ping.SendPingAsync(ip, PING_TIMEOUT);
+            if (reply.Status == IPStatus.Success) return true;
+
+            await Task.Delay(RETRY_BASE_DELAY * attempt);
+            return false;
+        }
+        catch
+        {
+            eventBus.EmitSignal("ping_error", ip);
+            return false;
+        }
+    }
+
+    private static void StartMonitoring(Plc plc, GodotObject eventBus)
+    {
+        _monitoringCts = new CancellationTokenSource();
+        Task.Run(async () =>
+        {
+            while (!_monitoringCts.IsCancellationRequested)
+            {
+                await Task.Delay(DEFAULT_MONITOR_INTERVAL);
+
+                if (!plc.IsConnected || !await IsPingable(plc.IP, eventBus))
+                {
+                    eventBus.CallDeferred("emit_signal", "plc_connection_lost", plc);
+                    await ConnectAndMonitorInternal(plc, eventBus, maxConnectRetries: 1);
+                }
+            }
+        });
+    }
+    #endregion
 }
