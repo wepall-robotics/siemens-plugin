@@ -17,8 +17,8 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Globals="*res://addons/siemens_plugin/scripts/globals/globals.gd"
 EventBus="*res://addons/siemens_plugin/scripts/globals/event_bus.gd"
+Globals="*res://addons/siemens_plugin/scripts/globals/globals.gd"
 
 [display]
 

@@ -39,7 +39,6 @@ public partial class NetworkUtils : RefCounted
     /// <param name="eventBus">The event bus to emit signals to. If null, no signals will be emitted.</param>
     public static async void Connect(Plc plc, GodotObject eventBus = null)
     {
-        GD.Print("Aquí el connect");
         if (plc == null)
         {
             if (eventBus != null)
@@ -67,7 +66,6 @@ public partial class NetworkUtils : RefCounted
             {
                 if (eventBus != null)
                 {
-                    // GD.Print("jaaaaaaa ", plc.IsConnected);
                     eventBus.EmitSignal("plc_connected", plc);
                 }
             }
