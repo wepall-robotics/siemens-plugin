@@ -42,3 +42,7 @@ folder_colors={
 "res://addons/siemens_plugin/scripts/": "purple",
 "res://addons/siemens_plugin/themes/": "pink"
 }
+
+[global_group]
+
+PlcNodes=""

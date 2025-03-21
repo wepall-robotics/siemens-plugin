@@ -3,9 +3,9 @@
 [ext_resource type="PackedScene" uid="uid://cun4q6wewllos" path="res://addons/siemens_plugin/components/plc/S7-1200.tscn" id="1_hcxmn"]
 [ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/libs/S7.Net/Plc.cs" id="2_ums1x"]
 
-[sub_resource type="Resource" id="Resource_xinta"]
+[sub_resource type="Resource" id="Resource_ums1x"]
 script = ExtResource("2_ums1x")
-IP = "192.168.0.200"
+IP = "192.168.0.1"
 CPU = 40
 Rack = 0
 Slot = 1
@@ -22,5 +22,4 @@ height = 1.9248
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05781, 0, 0)
 
 [node name="S7-1200-1" parent="." instance=ExtResource("1_hcxmn")]
-data = SubResource("Resource_xinta")
-status = 1
+data = SubResource("Resource_ums1x")

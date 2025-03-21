@@ -1,3 +1,4 @@
+@icon("uid://dgxa8u5bvugvi")
 @tool
 class_name PlcNode
 extends Node
@@ -25,7 +26,7 @@ enum Status {
 
 @export_category("PlcCommands")
 ## Export the status property of type [b]Status[/b] enum, initialized to [b]UNKNOWN[/b].
-@export var status: Status = Status.UNKNOWN:
+var status: Status = Status.UNKNOWN:
 	get: return status
 	set(value):
 		status = value
@@ -34,16 +35,26 @@ enum Status {
 ## Its purpose is to control category header placement in the inspector.
 @export var ghost_prop: bool
 
-# func _ready():
-# 	data = PLC_SCRIPT.new("", 10, 0, 1)
+var valid_configuration: bool = false
 
 # Override function to provide configuration warnings for the node.
 func _get_configuration_warnings():
+	valid_configuration = false
 	if not data:
 		return ["PLC configuration required:\n1. Select this node in the Scene tree.\n2. In the Inspector, find the data property.\n3. Assign or create a new PLC configuration."]
 	else:
 		if data.IP.is_empty() or !NetworkUtils.ValidateIP(data.IP):
 			return ["Invalid IP address:\n1. Select this node in the Scene tree.\n2. In the Inspector, expand the data property.\n3. Enter a valid IP address in the field."]
+		else:
+			var plc_nodes = get_tree().get_nodes_in_group("PlcNodes")
+			var counter = 0
+			for plc: PlcNode in plc_nodes:
+				if plc.data.IP == data.IP:
+					counter += 1
+			if counter > 1:
+				return ["There is another plc with this IP."]
+	valid_configuration = true
+
 	return []
 
 # Override function to validate and modify property attributes.

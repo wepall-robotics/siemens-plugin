@@ -26,7 +26,7 @@ namespace S7.Net
         /// <summary>
         /// The default timeout (in milliseconds) used for <see cref="P:ReadTimeout"/> and <see cref="P:WriteTimeout"/>.
         /// </summary>
-        public const int DefaultTimeout = 10_000;
+        public const int DefaultTimeout = 2_000;
 
         private readonly TaskQueue queue = new TaskQueue();
 

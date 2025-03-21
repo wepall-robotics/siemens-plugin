@@ -8,7 +8,7 @@
 [ext_resource type="Texture2D" uid="uid://c1bo3bvrcjeth" path="res://addons/siemens_plugin/icons/Import.svg" id="4_amifk"]
 [ext_resource type="Texture2D" uid="uid://c3ub2ftvbla3f" path="res://addons/siemens_plugin/icons/Export.svg" id="5_e1sas"]
 
-[node name="PlcCommands" type="HFlowContainer"]
+[node name="PlcCommands" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -16,42 +16,61 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_amifk")
 
-[node name="Connect" type="Button" parent="."]
+[node name="StatusContainer" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+
+[node name="Status" type="Label" parent="StatusContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HFlowContainer" type="HFlowContainer" parent="."]
+layout_mode = 2
+
+[node name="Connect" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Connect to the PLC to start communication."
 text = "Connect"
 icon = ExtResource("1_bc8d3")
 
-[node name="Disconnect" type="Button" parent="."]
+[node name="Disconnect" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Disconnect from the PLC to end communication."
+disabled = true
 text = "Disconnect"
 icon = ExtResource("2_xlb80")
 
-[node name="Ping" type="Button" parent="."]
+[node name="Ping" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Send a ping to check the PLC's availability."
 text = "Ping"
 icon = ExtResource("3_amifk")
 
-[node name="Online" type="Button" parent="."]
+[node name="Online" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Monitor live signals from the PLC."
+disabled = true
 text = "Online"
 icon = ExtResource("3_s5toc")
 
-[node name="Import" type="Button" parent="."]
+[node name="Import" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Import PLC configurations from an Excel file."
 text = "Import"
 icon = ExtResource("4_amifk")
 
-[node name="Export" type="Button" parent="."]
+[node name="Export" type="Button" parent="HFlowContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Export PLC configurations to an Excel file."

@@ -57,7 +57,7 @@ func _create_command_tools():
 ## [b]Returns:[/b] [color=#70bafa]bool[/color] - [i]True if the connection is successful, false otherwise.[/i]
 func _connect_plc():
 	# Validate the IP address
-	if not _plc.data:
+	if not _plc.data or not _plc.valid_configuration:
 		return
 
 	if !NetworkUtils.ValidateIP(_plc.data.IP):
@@ -99,14 +99,41 @@ func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 ## - [param force]: [color=#70bafa]bool[/color] - If true, forces the disconnection.
 ## [b]Returns:[/b] [color=#70bafa]void[/color]
 func _disconnect():
+	if not _plc.data or _plc.status != PlcNode.Status.CONNECTED:
+		EventBus.plc_disconnection_failed.emit("PLC not configured or connected.", func(): pass)
+		return
+
+	EventBus.confirm_popup_invoked.emit({
+		"title": "Disconnect PLC",
+		"message": "Are you sure you want to disconnect the PLC?",
+		"ok_text": "Yes",
+		"cancel_text": "No",
+		"ok_callback": func(): NetworkUtils.Disconnect(_plc.data, EventBus)
+	}, func(): pass)
+
+func _on_plc_disconnected(plc):
 	_plc.status = PlcNode.Status.DISCONNECTED
+	print("PLC successfully disconnected.")
+
+func _on_plc_disconnection_failed(reason):
+	print("PLC disconnection failed: %s" % reason)
+	
+	var params = {
+		"title": "Disconnection Error",
+		"message": "Failed to disconnect PLC:\n%s" % reason,
+		"ok_text": "OK"
+	}
+	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
+
+func _on_plc_already_disconnected(plc):
+	print("PLC was already disconnected.")
 
 ## Sends a ping to the [b]PLC[/b].
 ## [b]Returns:[/b]
 ## - [color=#70bafa]string[/color]: The response from the PLC.
 func _ping() -> void:
 	# Validate the IP address
-	if not _plc.data:
+	if not _plc.data or _plc.status == PlcNode.Status.CONNECTED or not _plc.valid_configuration:
 		return
 	if !NetworkUtils.ValidateIP(_plc.data.IP):
 		

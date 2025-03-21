@@ -28,6 +28,40 @@ public partial class NetworkUtils : RefCounted
         _ = ConnectAndMonitorInternal(plc, eventBus, maxConnectRetries: 3);
     }
 
+    public static void Disconnect(Plc plc, GodotObject eventBus = null)
+    {
+        if (plc == null)
+        {
+            eventBus?.EmitSignal("plc_disconnection_failed", "PLC not valid.");
+            return;
+        }
+
+        try
+        {
+            // Cancela cualquier operación en curso
+            CancelAllOperations();
+
+            // Verifica si el PLC está conectado antes de intentar desconectar
+            if (plc.IsConnected)
+            {
+                plc.Close(); // Cierra la conexión con el PLC
+                eventBus?.EmitSignal("plc_disconnected", plc);
+                GD.Print("PLC disconnected.");
+            }
+            else
+            {
+                GD.Print("El PLC already disconnected.");
+                eventBus?.EmitSignal("plc_already_disconnected", plc);
+            }
+        }
+        catch (Exception e)
+        {
+            GD.PrintErr($"Plc disconnection failed: {e.Message}");
+            eventBus?.EmitSignal("plc_disconnection_failed", $"Error: {e.Message}");
+        }
+    }
+
+
     public static bool ValidateIP(string ip)
     {
         return IPAddress.TryParse(ip, out var address)
