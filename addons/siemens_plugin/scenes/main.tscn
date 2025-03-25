@@ -5,7 +5,7 @@
 
 [sub_resource type="Resource" id="Resource_ums1x"]
 script = ExtResource("2_ums1x")
-IP = "192.168.0.1"
+IP = "192.168.0.200"
 CPU = 40
 Rack = 0
 Slot = 1

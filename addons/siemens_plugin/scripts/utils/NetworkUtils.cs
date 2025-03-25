@@ -170,6 +170,10 @@ public partial class NetworkUtils : RefCounted
                     success = true;
                     break;
                 }
+                else
+                {
+                    eventBus.EmitSignal("ping_attempt_failed", ip, attempt, MAX_PING_ATTEMPTS);
+                }
             }
             eventBus.EmitSignal("ping_completed", ip, success);
         }
