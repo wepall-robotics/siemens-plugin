@@ -11,19 +11,9 @@ func _ready() -> void:
 	$HFlowContainer/Import.pressed.connect(EventBus.import_invoked.emit)
 	$HFlowContainer/Export.pressed.connect(EventBus.export_invoked.emit)
 	
-	EventBus.plc_connected.connect(func(plc: Plc):
-		$HFlowContainer/Connect.disabled = true
-		$HFlowContainer/Disconnect.disabled = false
-		$HFlowContainer/Online.disabled = false
-		$HFlowContainer/Ping.disabled = true
-		_set_color(PlcNode.Status.CONNECTED))
-
-	EventBus.plc_connection_lost.connect(func(plc: Plc):
-		$HFlowContainer/Connect.disabled = false
-		$HFlowContainer/Ping.disabled = false
-		$HFlowContainer/Disconnect.disabled = true
-		$HFlowContainer/Online.disabled = true
-		_set_color(PlcNode.Status.DISCONNECTED))
+	EventBus.plc_connected.connect(func(plc: Plc): _on_plc_connection_changed(true))
+	EventBus.plc_connection_lost.connect(func(plc: Plc): _on_plc_connection_changed(false))
+	EventBus.plc_disconnected.connect(func(plc: Plc): _on_plc_connection_changed(false))
 
 func set_up(plc: PlcNode) -> void:
 	$HFlowContainer/Connect.disabled = plc.status == PlcNode.Status.CONNECTED
@@ -32,6 +22,17 @@ func set_up(plc: PlcNode) -> void:
 	$HFlowContainer/Online.disabled  = plc.status == PlcNode.Status.DISCONNECTED
 	
 	_set_color(plc.status)
+
+func _on_plc_connection_changed(connected: bool):
+	$HFlowContainer/Connect.disabled = connected
+	$HFlowContainer/Ping.disabled = connected
+	$HFlowContainer/Disconnect.disabled = not connected
+	$HFlowContainer/Online.disabled = not connected
+	
+	if connected:
+		_set_color(PlcNode.Status.CONNECTED)
+	else:
+		_set_color(PlcNode.Status.DISCONNECTED)
 
 func _set_color(status: PlcNode.Status) -> void:
 	match status:
