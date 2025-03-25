@@ -38,6 +38,8 @@ func _connect_event_bus_signals() -> void:
 		EventBus.plc_connection_attempt.connect(_on_plc_connection_attempt)
 	if not EventBus.plc_connection_lost.is_connected(_on_plc_connection_lost):
 		EventBus.plc_connection_lost.connect(_on_plc_connection_lost)
+	if not EventBus.plc_disconnected.is_connected(_on_plc_disconnected):
+		EventBus.plc_disconnected.connect(_on_plc_disconnected)
 
 func _parse_category(object, category):
 	if category=="PlcCommands":

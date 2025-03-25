@@ -30,6 +30,7 @@ public partial class NetworkUtils : RefCounted
 
     public static void Disconnect(Plc plc, GodotObject eventBus = null)
     {
+        GD.Print("Disconnecting PLC...");
         if (plc == null)
         {
             eventBus?.EmitSignal("plc_disconnection_failed", "PLC not valid.");
@@ -45,6 +46,7 @@ public partial class NetworkUtils : RefCounted
             if (plc.IsConnected)
             {
                 plc.Close(); // Cierra la conexión con el PLC
+                // eventBus.CallDeferred("emit_signal", "plc_disconnected", plc);
                 eventBus?.EmitSignal("plc_disconnected", plc);
                 GD.Print("PLC disconnected.");
             }
@@ -227,7 +229,7 @@ public partial class NetworkUtils : RefCounted
             {
                 await Task.Delay(DEFAULT_MONITOR_INTERVAL);
 
-                if (!plc.IsConnected || !await IsPingable(plc.IP, eventBus))
+                if (!_monitoringCts.IsCancellationRequested && (!plc.IsConnected || !await IsPingable(plc.IP, eventBus)))
                 {
                     eventBus.CallDeferred("emit_signal", "plc_connection_lost", plc);
                     await ConnectAndMonitorInternal(plc, eventBus, maxConnectRetries: 1);

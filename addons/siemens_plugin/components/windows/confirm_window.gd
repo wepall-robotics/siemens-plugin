@@ -23,8 +23,9 @@ func _modify_content_popup(params: Dictionary, callback: Callable):
 	if ok_text != "":
 		get_ok_button().visible = true
 		get_ok_button().text = ok_text
+		var ok_callback = params.get("ok_callback", func(): pass)
 		# Connect confirmation button
-		confirmed.connect(callback, CONNECT_ONE_SHOT)
+		confirmed.connect(ok_callback, CONNECT_ONE_SHOT)
 	else:
 		get_ok_button().visible = false
 

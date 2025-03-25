@@ -6,9 +6,17 @@
 [sub_resource type="Resource" id="Resource_ums1x"]
 script = ExtResource("2_ums1x")
 IP = "192.168.0.200"
+Port = 102
 CPU = 40
 Rack = 0
 Slot = 1
+MaxPDUSize = 960
+ReadTimeout = 2000
+WriteTimeout = 2000
+readTimeout = 2000
+writeTimeout = 2000
+_ip = "192.168.0.200"
+disposedValue = false
 metadata/_custom_type_script = "uid://cpky2rr1o1uln"
 
 [node name="Main" type="Node3D"]
