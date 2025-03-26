@@ -1,8 +1,11 @@
 @tool
 extends EditorInspectorPlugin
 
-const PLC_COMMANDS : PackedScene = preload("res://addons/siemens_plugin/components/controls/plc_commands.tscn")
+var PLC_COMMANDS : PackedScene
 var _plc: PlcNode
+
+func _init():
+	PLC_COMMANDS = load("res://addons/siemens_plugin/components/controls/plc_commands.tscn")
 
 # Determines if the given object can be handled by this controller.
 func _can_handle(object) -> bool:
@@ -14,6 +17,8 @@ func _can_handle(object) -> bool:
 
 ## Method to connect [b]EventBus signals[/b] to their respective handlers.
 func _connect_event_bus_signals() -> void:
+	await EventBus
+
 	if not EventBus.ping_invoked.is_connected(_ping):
 		EventBus.ping_invoked.connect(_ping)
 	if not EventBus.plc_connect_invoked.is_connected(_connect_plc):
@@ -84,7 +89,10 @@ func _connect_plc():
 		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.ConnectPlc(_plc.data, EventBus))
+	print("Antes de conectar.")
+	EventBus.confirm_popup_invoked.emit(params, func(): 
+		print("Salta el evento de connect")
+		NetworkUtils.ConnectPlc(_plc.data, EventBus))
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 	var params = {

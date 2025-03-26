@@ -13,7 +13,7 @@ public partial class NetworkUtils : RefCounted
     const int MAX_PING_ATTEMPTS = 4;
     const int PING_TIMEOUT = 1000;
     const int RETRY_BASE_DELAY = 500;
-    const int DEFAULT_MONITOR_INTERVAL = 5000;
+    const int DEFAULT_MONITOR_INTERVAL = 50;
     #endregion
 
     #region Internal State

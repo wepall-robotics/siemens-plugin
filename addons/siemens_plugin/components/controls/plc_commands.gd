@@ -4,6 +4,7 @@ extends Control
 class_name PlcCommands
 
 func _ready() -> void:
+	await EventBus
 	$HFlowContainer/Connect.pressed.connect(EventBus.plc_connect_invoked.emit)
 	$HFlowContainer/Disconnect.pressed.connect(EventBus.plc_disconnect_invoked.emit)
 	$HFlowContainer/Ping.pressed.connect(EventBus.ping_invoked.emit)
