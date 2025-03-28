@@ -92,7 +92,7 @@ func _connect_plc():
 	print("Antes de conectar.")
 	EventBus.confirm_popup_invoked.emit(params, func(): 
 		print("Salta el evento de connect")
-		NetworkUtils.ConnectPlc(_plc.data, EventBus))
+		NetworkUtils.ConnectPlc(_plc, EventBus))
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 	var params = {

@@ -39,14 +39,13 @@ public partial class NetworkUtils : RefCounted
 
         try
         {
-            // Cancela cualquier operación en curso
+            // Cancel any ongoing operation
             CancelAllOperations();
 
-            // Verifica si el PLC está conectado antes de intentar desconectar
+            // Check if the PLC is connected before attempting to disconnect
             if (plc.IsConnected)
             {
-                plc.Close(); // Cierra la conexión con el PLC
-                // eventBus.CallDeferred("emit_signal", "plc_disconnected", plc);
+                plc.Close(); // Closes the connection with the PLC
                 eventBus?.EmitSignal("plc_disconnected", plc);
                 GD.Print("PLC disconnected.");
             }
@@ -100,7 +99,7 @@ public partial class NetworkUtils : RefCounted
                 attempts++;
                 eventBus.CallDeferred("emit_signal", "plc_connection_attempt", attempts, maxConnectRetries);
 
-                // Verificación mejorada de estado
+                // Enhanced status verification
                 bool plcAvailable = await CheckPlcAvailability(plc.IP, eventBus);
 
                 if (plcAvailable)

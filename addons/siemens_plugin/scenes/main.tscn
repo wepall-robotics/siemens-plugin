@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://cwyxf78y08kuf"]
 
 [ext_resource type="PackedScene" uid="uid://cun4q6wewllos" path="res://addons/siemens_plugin/components/plc/S7-1200.tscn" id="1_ums1x"]
-[ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/libs/S7.Net/Plc.cs" id="2_xinta"]
+[ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/siemens_plugin/libs/S7.Net/Plc.cs" id="2_xinta"]
 
 [sub_resource type="Resource" id="Resource_f3x8x"]
 script = ExtResource("2_xinta")
