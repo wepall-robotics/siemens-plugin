@@ -92,7 +92,7 @@ func _connect_plc():
 	print("Antes de conectar.")
 	EventBus.confirm_popup_invoked.emit(params, func(): 
 		print("Salta el evento de connect")
-		NetworkUtils.ConnectPlc(_plc, EventBus))
+		_plc.data.ConnectPlc(EventBus))
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 	var params = {
@@ -100,7 +100,7 @@ func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 		"message": "Attempt %d/%d: Establishing connection..." % [attempt, max_attempts],
 		"progress": true,
 		"cancel_text": "Cancel",
-		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
+		"cancel_callback": func():  _plc.data.CancelAllOperations()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
@@ -118,7 +118,7 @@ func _disconnect():
 		"message": "Are you sure you want to disconnect the PLC?",
 		"ok_text": "Yes",
 		"cancel_text": "No",
-		"ok_callback": func(): NetworkUtils.Disconnect(_plc.data, EventBus)
+		"ok_callback": func(): _plc.data.Disconnect(EventBus)
 	}, func(): pass)
 
 func _on_plc_disconnected(plc):
@@ -145,7 +145,7 @@ func _ping() -> void:
 	# Validate the IP address
 	if not _plc.data or _plc.status == PlcNode.Status.CONNECTED or not _plc.valid_configuration:
 		return
-	if !NetworkUtils.ValidateIP(_plc.data.IP):
+	if !_plc.data.ValidateIP():
 		
 		var params = {
 			"title": "Invalid IP Address",
@@ -165,10 +165,10 @@ func _ping() -> void:
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func(): NetworkUtils.CancelAllOperations()
+		"cancel_callback": func(): _plc.data.CancelAllOperations()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): NetworkUtils.PingPlc(_plc.data.IP, EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): _plc.data.PingPlc(EventBus))
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc is accomplish.
@@ -216,7 +216,7 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 		"title": "PLC Ping",
 		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
 		"progress": true,
-		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
+		"cancel_callback": func():  _plc.data.CancelAllOperations()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
