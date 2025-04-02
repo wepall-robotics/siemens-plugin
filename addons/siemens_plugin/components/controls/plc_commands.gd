@@ -17,12 +17,12 @@ func _ready() -> void:
 	EventBus.plc_disconnected.connect(func(plc: Plc): _on_plc_connection_changed(false))
 
 func set_up(plc: PlcNode) -> void:
-	$HFlowContainer/Connect.disabled = plc.status == PlcNode.Status.CONNECTED
-	$HFlowContainer/Ping.disabled = plc.status == PlcNode.Status.CONNECTED
-	$HFlowContainer/Disconnect.disabled  = plc.status == PlcNode.Status.DISCONNECTED
-	$HFlowContainer/Online.disabled  = plc.status == PlcNode.Status.DISCONNECTED
+	$HFlowContainer/Connect.disabled = plc.CurrentStatus == 0
+	$HFlowContainer/Ping.disabled = plc.CurrentStatus == 0
+	$HFlowContainer/Disconnect.disabled  = plc.CurrentStatus != 0
+	$HFlowContainer/Online.disabled  = plc.CurrentStatus != 0
 	
-	_set_color(plc.status)
+	_set_color(plc.CurrentStatus)
 
 func _on_plc_connection_changed(connected: bool):
 	$HFlowContainer/Connect.disabled = connected
@@ -31,21 +31,21 @@ func _on_plc_connection_changed(connected: bool):
 	$HFlowContainer/Online.disabled = not connected
 	
 	if connected:
-		_set_color(PlcNode.Status.CONNECTED)
+		_set_color(0)
 	else:
-		_set_color(PlcNode.Status.DISCONNECTED)
+		_set_color(1)
 
-func _set_color(status: PlcNode.Status) -> void:
+func _set_color(status: int) -> void:
 	match status:
-		PlcNode.Status.DISCONNECTED:
+		1:
 			$StatusContainer.color = Color("#ff786b")
 			$StatusContainer/Status.text = "Disconnected"
 			$StatusContainer/Status.set("theme_override_colors/font_color", Color("#95463f"))
-		PlcNode.Status.CONNECTED:
+		0:
 			$StatusContainer.color = Color("#8eef97")
 			$StatusContainer/Status.text = "Connected"
 			$StatusContainer/Status.set("theme_override_colors/font_color", Color("#5c9a62"))
-		PlcNode.Status.UNKNOWN:
+		2:
 			$StatusContainer.color = Color("#ffde66")
 			$StatusContainer/Status.text = "Unknown"
 			$StatusContainer/Status.set("theme_override_colors/font_color", Color("#927f3b"))

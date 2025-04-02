@@ -9,15 +9,65 @@ using S7.Net;
 /// <summary>
 /// Node for writing 32 digital outputs to %Q area
 /// </summary>
+[Tool]
 public partial class DQ32Node : Node, IWriteAction
 {
     [Export] public int StartByte { get; set; }
-    [Export] public Plc Plc { get; set; } // Reference to the PLC instance
-    public DQ32Data Data { get; } = new DQ32Data();
+    [Export]
+    public PlcNode PlcNode
+    {
+        get => _plc;
+        set
+        {
+            // Solo actualizar si cambia la referencia
+            if (_plc == value) return;
+
+            // Desregistrar del PLC anterior
+            if (_plc != null && _isRegistered)
+            {
+                _plc.Data.RemoveAction(this);
+                _isRegistered = false;
+            }
+
+            _plc = value;
+
+            // Registrar en el nuevo PLC si está en el árbol
+            if (_plc != null && IsInsideTree())
+            {
+                _plc.Data.RegisterAction(this);
+                _isRegistered = true;
+            }
+        }
+    }
+    public Plc TargetPlc { get => _plc?.Data; }
+
+    [Export]
+    public Godot.Collections.Array<bool> Outputs { get; set; } = new Godot.Collections.Array<bool>(new bool[32]);
+    private const int BLOCK_SIZE = 4; // 32 bits = 4 bytes
+    private PlcNode _plc;
+    private bool _isRegistered;
+
+    public override void _Ready()
+    {
+        if (TargetPlc != null && !_isRegistered)
+        {
+            TargetPlc.RegisterAction(this);
+            _isRegistered = true;
+        }
+    }
+
+    public override void _ExitTree()
+    {
+        if (TargetPlc != null && _isRegistered)
+        {
+            TargetPlc.RemoveAction(this);
+            _isRegistered = false;
+        }
+    }
 
     public void Execute()
     {
-        if (Plc == null)
+        if (TargetPlc == null)
         {
             GD.PrintErr("PLC instance is null. Cannot execute DQ32Node action.");
             return;
@@ -26,19 +76,19 @@ public partial class DQ32Node : Node, IWriteAction
         try
         {
             byte[] buffer = new byte[4];
-            
+
             // Pack bits into bytes
             for (int i = 0; i < 32; i++)
             {
                 int byteOffset = i / 8;
                 int bitOffset = i % 8;
-                if (Data[i]) 
+                if (Outputs[i])
                 {
                     buffer[byteOffset] |= (byte)(1 << bitOffset);
                 }
             }
-            
-            Plc.WriteBytes(DataType.Output, 0, StartByte, buffer);
+
+            TargetPlc.WriteBytes(DataType.Output, 0, StartByte, buffer);
         }
         catch (Exception ex)
         {

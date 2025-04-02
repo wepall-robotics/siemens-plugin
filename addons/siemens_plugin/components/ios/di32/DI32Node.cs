@@ -9,6 +9,7 @@ using System;
 /// <summary>
 /// Node for reading 32 digital inputs from %I area
 /// </summary>
+[Tool]
 public partial class DI32Node : Node, IReadAction
 {
     /// <summary>
@@ -16,7 +17,7 @@ public partial class DI32Node : Node, IReadAction
     /// </summary>
     [Export] public int StartByte { get; set; }
     [Export]
-    public Plc TargetPlc
+    public PlcNode PlcNode
     {
         get => _plc;
         set
@@ -27,7 +28,7 @@ public partial class DI32Node : Node, IReadAction
             // Desregistrar del PLC anterior
             if (_plc != null && _isRegistered)
             {
-                _plc.RemoveAction(this);
+                _plc.Data.RemoveAction(this);
                 _isRegistered = false;
             }
 
@@ -36,19 +37,17 @@ public partial class DI32Node : Node, IReadAction
             // Registrar en el nuevo PLC si está en el árbol
             if (_plc != null && IsInsideTree())
             {
-                _plc.RegisterAction(this);
+                _plc.Data.RegisterAction(this);
                 _isRegistered = true;
             }
         }
     }
+    public Plc TargetPlc { get => _plc?.Data; }
 
-    /// <summary>
-    /// Storage for input values
-    /// </summary>
-    public DI32Data Data { get; } = new DI32Data();
-
+    [Export] 
+    public Godot.Collections.Array<bool> Inputs { get; set; } = new Godot.Collections.Array<bool>(new bool[32]);
     private const int BLOCK_SIZE = 4; // 32 bits = 4 bytes
-    private Plc _plc;
+    private PlcNode _plc;
     private bool _isRegistered;
 
     public override void _Ready()
@@ -73,7 +72,7 @@ public partial class DI32Node : Node, IReadAction
     {
         if (TargetPlc == null)
         {
-            GD.PrintErr("PLC instance is null. Cannot execute DQ32Node action.");
+            GD.PrintErr("PLC instance is null. Cannot execute DI32Node action.");
             return;
         }
 
@@ -87,34 +86,13 @@ public partial class DI32Node : Node, IReadAction
             {
                 int byteOffset = i / 8;
                 int bitOffset = i % 8;
-                Data[i] = (buffer[byteOffset] & (1 << bitOffset)) != 0;
+                Inputs[i] = (buffer[byteOffset] & (1 << bitOffset)) != 0;
             }
+
         }
         catch (Exception ex)
         {
             GD.PrintErr($"DI32 Read Error (StartByte={StartByte}): {ex.Message}");
         }
     }
-}
-
-/// <summary>
-/// Data container for 32 digital inputs
-/// </summary>
-public class DI32Data
-{
-    private readonly bool[] _values = new bool[32];
-
-    /// <summary>
-    /// Index-based access (0-31)
-    /// </summary>
-    public bool this[int index]
-    {
-        get => _values[index];
-        set => _values[index] = value;
-    }
-
-    /// <summary>
-    /// Get value using Siemens-style addressing (byte.bit)
-    /// </summary>
-    public bool GetBit(int bytePos, int bitPos) => this[(bytePos * 8) + bitPos];
 }

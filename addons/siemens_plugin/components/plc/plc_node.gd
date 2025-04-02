@@ -1,6 +1,6 @@
 @icon("uid://dgxa8u5bvugvi")
 @tool
-class_name PlcNode
+class_name PlcNode2
 extends Node
 
 ## Enum representing the connection status of the PLC.
@@ -22,7 +22,7 @@ enum Status {
 		update_configuration_warnings()
 
 ## Holds an array of [b]Plc[/b] Signal objects.
-@export var signals: Array[PlcSignal]
+#@export var signals: Array[PlcSignal]
 
 @export_category("PlcCommands")
 ## Export the status property of type [b]Status[/b] enum, initialized to [b]UNKNOWN[/b].
@@ -48,7 +48,7 @@ func _get_configuration_warnings():
 		else:
 			var plc_nodes = get_tree().get_nodes_in_group("PlcNodes")
 			var counter = 0
-			for plc: PlcNode in plc_nodes:
+			for plc: PlcNode2 in plc_nodes:
 				if plc.data.IP == data.IP:
 					counter += 1
 			if counter > 1:
