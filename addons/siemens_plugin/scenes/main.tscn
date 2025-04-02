@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=5 format=3 uid="uid://cwyxf78y08kuf"]
 
-[ext_resource type="PackedScene" uid="uid://cun4q6wewllos" path="res://addons/siemens_plugin/components/plc/S7-1200.tscn" id="1_ums1x"]
+[ext_resource type="PackedScene" uid="uid://cun4q6wewllos" path="res://addons/siemens_plugin/components/plc/S7-1500.tscn" id="1_ums1x"]
 [ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/siemens_plugin/libs/S7.Net/Plc.cs" id="2_xinta"]
+[ext_resource type="Script" uid="uid://c8d07npjnop4u" path="res://addons/siemens_plugin/components/ios/di32/DI32Node.cs" id="3_xinta"]
 
 [sub_resource type="Resource" id="Resource_f3x8x"]
 script = ExtResource("2_xinta")
@@ -9,6 +10,7 @@ IP = "192.168.0.200"
 CPU = 40
 Rack = 0
 Slot = 1
+IsOnline = false
 metadata/_custom_type_script = "uid://cpky2rr1o1uln"
 
 [node name="Main" type="Node3D"]
@@ -21,5 +23,8 @@ height = 1.9248
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.05781, 0, 0)
 
-[node name="S7-1200-1" parent="." instance=ExtResource("1_ums1x")]
+[node name="S7-1500-1" parent="." instance=ExtResource("1_ums1x")]
 data = SubResource("Resource_f3x8x")
+
+[node name="Node" type="Node" parent="."]
+script = ExtResource("3_xinta")

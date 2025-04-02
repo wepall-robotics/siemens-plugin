@@ -1,0 +1,7 @@
+[gd_scene load_steps=3 format=3 uid="uid://cun4q6wewllos"]
+
+[ext_resource type="PackedScene" uid="uid://doihw0iqm5445" path="res://addons/siemens_plugin/components/plc/S7-1200.glb" id="1_db47j"]
+[ext_resource type="Script" uid="uid://c6sk5wy8ql0ng" path="res://addons/siemens_plugin/components/plc/plc_node.gd" id="2_4nsa3"]
+
+[node name="S7-1500-1" groups=["PlcNodes"] instance=ExtResource("1_db47j")]
+script = ExtResource("2_4nsa3")

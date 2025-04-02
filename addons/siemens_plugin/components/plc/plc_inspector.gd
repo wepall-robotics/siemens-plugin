@@ -229,7 +229,7 @@ func _on_ping_completed(ip: String, success: bool) -> void:
 		"cancel_text": "",
 		"progress": false
 	}
-	
+
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 ## Monitors live signals from the [b]PLC[/b].
