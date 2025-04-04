@@ -61,6 +61,8 @@ public partial class PlcNode : Node
     [Export]
     public bool ValidConfiguration { get => _validConfiguration; set => _validConfiguration = value; }
 
+    [Export]
+    public DataGroup DataGroup { get; set; }
     public override string[] _GetConfigurationWarnings()
     {
         List<string> warnings = [];
@@ -74,7 +76,7 @@ public partial class PlcNode : Node
         }
         else
         {
-            if (string.IsNullOrEmpty(Data.IP) || !NetworkUtils.ValidateIP(Data.IP))
+            if (string.IsNullOrEmpty(Data.IP) || !Plc.ValidateIP(Data.IP))
             {
                 warnings.Add("Invalid IP address:\n1. Select this node in the Scene tree.\n" +
                             "2. In the Inspector, expand the data property.\n" +
@@ -119,7 +121,7 @@ public partial class PlcNode : Node
         {
             // Modificar el flag de uso (casting necesario)
             PropertyUsageFlags usage = property["usage"].As<PropertyUsageFlags>();
-            usage |= PropertyUsageFlags.ReadOnly;
+            usage = PropertyUsageFlags.NoEditor;
             property["usage"] = (int)usage;
         }
         else if (propertyName == nameof(GhostProp))

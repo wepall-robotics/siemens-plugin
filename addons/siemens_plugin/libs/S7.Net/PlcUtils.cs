@@ -19,7 +19,7 @@ namespace S7.Net
         const int DEFAULT_MONITOR_INTERVAL = 50;
         #endregion
 
-        #region Internal State
+        #region Private Fields
         private CancellationTokenSource _currentCts;
         private CancellationTokenSource _monitoringCts;
         private Plc _activePlc;
@@ -74,12 +74,11 @@ namespace S7.Net
             }
         }
 
-
-        public bool ValidateIP()
+        public static bool ValidateIP(string ip)
         {
-            return IPAddress.TryParse(this.IP, out var address)
+            return IPAddress.TryParse(ip, out var address)
                 && address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork
-                && address.ToString() == this.IP;
+                && address.ToString() == ip;
         }
 
         public void PingPlc(GodotObject eventBus)
@@ -149,7 +148,6 @@ namespace S7.Net
                 }
             }
         }
-
         #endregion
 
         #region Core Implementation
@@ -256,6 +254,11 @@ namespace S7.Net
         #endregion
 
         #region Helper Methods
+        /// <summary>
+        /// Checks whether the PLC is pingable.
+        /// </summary>
+        /// <param name="eventBus">The event bus to emit signals to.</param>
+        /// <returns>True if the PLC is pingable, false otherwise.</returns>
         private async Task<bool> IsPingable(GodotObject eventBus)
         {
             using var ping = new Ping();

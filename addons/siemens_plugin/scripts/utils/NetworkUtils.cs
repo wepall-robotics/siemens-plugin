@@ -62,7 +62,6 @@ public partial class NetworkUtils : RefCounted
         }
     }
 
-
     public static bool ValidateIP(string ip)
     {
         return IPAddress.TryParse(ip, out var address)

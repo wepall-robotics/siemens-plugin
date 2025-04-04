@@ -47,7 +47,6 @@ func _connect_event_bus_signals() -> void:
 		EventBus.plc_disconnected.connect(_on_plc_disconnected)
 
 func _parse_category(object, category):
-	print(category)
 	if category=="PlcCommands":
 		_create_command_tools()
 
@@ -67,8 +66,8 @@ func _connect_plc():
 	# Validate the IP address
 	if not _plc.Data or not _plc.ValidConfiguration:
 		return
-
-	if !NetworkUtils.ValidateIP(_plc.Data.IP):
+	
+	if !Plc.ValidateIP(_plc.Data.IP):
 		var params = {
 			"title": "Invalid IP Address",
 			"message": "The IP address is invalid. Please enter a valid IP address.",
@@ -147,7 +146,7 @@ func _ping() -> void:
 	# Validate the IP address
 	if not _plc.Data or _plc.CurrentStatus == 0 or not _plc.ValidConfiguration:
 		return
-	if !_plc.Data.ValidateIP():
+	if !Plc.ValidateIP(_plc.Data.IP):
 		
 		var params = {
 			"title": "Invalid IP Address",
