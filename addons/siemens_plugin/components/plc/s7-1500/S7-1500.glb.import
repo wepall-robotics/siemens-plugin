@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://c6vdnhwy7iybh"
-path="res://.godot/imported/S7-1500.glb-edcfd15be50c469db0f0ed231b6724c3.scn"
+path="res://.godot/imported/S7-1500.glb-6a49f896f2c23989060fcf15523b3896.scn"
 
 [deps]
 
-source_file="res://addons/siemens_plugin/components/plc/S7-1500.glb"
-dest_files=["res://.godot/imported/S7-1500.glb-edcfd15be50c469db0f0ed231b6724c3.scn"]
+source_file="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500.glb"
+dest_files=["res://.godot/imported/S7-1500.glb-6a49f896f2c23989060fcf15523b3896.scn"]
 
 [params]
 

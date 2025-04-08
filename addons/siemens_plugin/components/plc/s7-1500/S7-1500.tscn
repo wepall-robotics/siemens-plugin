@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://1od8wyhv4aio"]
 
-[ext_resource type="PackedScene" uid="uid://c6vdnhwy7iybh" path="res://addons/siemens_plugin/components/plc/S7-1500.glb" id="1_db47j"]
+[ext_resource type="PackedScene" uid="uid://c6vdnhwy7iybh" path="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500.glb" id="1_db47j"]
 [ext_resource type="Script" uid="uid://b4s24bx6kccl4" path="res://addons/siemens_plugin/components/plc/PlcNode.cs" id="2_db47j"]
 
 [node name="S7-1500" groups=["PlcNodes"] instance=ExtResource("1_db47j")]

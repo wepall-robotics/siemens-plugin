@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://crkmokjvrpms"
-path.s3tc="res://.godot/imported/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png-177e82cdc88e3a7e38c14a7b98bf4220.s3tc.ctex"
+path.s3tc="res://.godot/imported/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png-cce1ef759a43f36975eed25ed7a173b3.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -14,8 +14,8 @@ generator_parameters={
 
 [deps]
 
-source_file="res://addons/siemens_plugin/components/plc/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png"
-dest_files=["res://.godot/imported/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png-177e82cdc88e3a7e38c14a7b98bf4220.s3tc.ctex"]
+source_file="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png"
+dest_files=["res://.godot/imported/S7-1500_PLC_Basecolor2_Metallic.1001-PLC_Basecolor2_Roughness_5.png-cce1ef759a43f36975eed25ed7a173b3.s3tc.ctex"]
 
 [params]
 

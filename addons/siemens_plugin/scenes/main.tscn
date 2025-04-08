@@ -1,11 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=7 format=3 uid="uid://cwyxf78y08kuf"]
 
-[ext_resource type="PackedScene" uid="uid://cun4q6wewllos" path="res://addons/siemens_plugin/components/plc/S7-1500.tscn" id="1_ums1x"]
+[ext_resource type="PackedScene" uid="uid://1od8wyhv4aio" path="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500.tscn" id="1_ums1x"]
 [ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/siemens_plugin/libs/S7.Net/Plc.cs" id="2_f3x8x"]
 [ext_resource type="Script" uid="uid://ddtn3y2cjggu1" path="res://addons/siemens_plugin/libs/S7.Net/Types/DataItem.cs" id="3_aa7xr"]
-[ext_resource type="Script" uid="uid://c8d07npjnop4u" path="res://addons/siemens_plugin/components/ios/di32/DI32Node.cs" id="3_xinta"]
 [ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/components/plc/DataGroup.cs" id="4_3vqly"]
-[ext_resource type="Script" uid="uid://cbrh33xn6k8qi" path="res://addons/siemens_plugin/components/ios/dq32/DQ32Node.cs" id="4_f3x8x"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/bool/BoolItem.cs" id="5_3vqly"]
 
 [sub_resource type="Resource" id="Resource_2jegt"]
 script = ExtResource("2_f3x8x")
@@ -41,59 +40,15 @@ script = ExtResource("3_aa7xr")
 DataType = 130
 VarType = 1
 Count = 1
-GDValue = 0
 metadata/_custom_type_script = "uid://ddtn3y2cjggu1"
 
-[node name="bPE1 => TRUE" type="Node3D" parent="S7-1500-1/DataGroup"]
-
-[node name="bPE2 -> FALSE" type="Node3D" parent="S7-1500-1/DataGroup"]
-
-[node name="iCounter -> 10" type="Node3D" parent="S7-1500-1/DataGroup"]
-
-[node name="EntradaTal4" type="Node3D" parent="S7-1500-1/DataGroup"]
-
-[node name="SalidaTal" type="Node2D" parent="S7-1500-1/DataGroup"]
-
-[node name="SalidaTal2" type="Node2D" parent="S7-1500-1/DataGroup"]
-
-[node name="SalidaTal3" type="Node2D" parent="S7-1500-1/DataGroup"]
-
-[node name="SalidaTal4" type="Node2D" parent="S7-1500-1/DataGroup"]
-
-[node name="SalidaTal5" type="Node2D" parent="S7-1500-1/DataGroup"]
-
-[node name="InOutTal" type="Control" parent="S7-1500-1/DataGroup"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="InOutTal2" type="Control" parent="S7-1500-1/DataGroup"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="InOutTal3" type="Control" parent="S7-1500-1/DataGroup"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="InOutTal4" type="Control" parent="S7-1500-1/DataGroup"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="DataItem2" type="Node" parent="S7-1500-1/DataGroup"]
-script = ExtResource("3_aa7xr")
-DataType = 131
-VarType = 4
-StartByteAdr = 55
+[node name="BoolItem" type="Node" parent="S7-1500-1/DataGroup" node_paths=PackedStringArray("VisualComponent")]
+script = ExtResource("5_3vqly")
+VisualComponent = NodePath("../../../CSGCylinder3D")
+VisualProperty = "calculate_tangents"
+GDValue = true
+DataType = 129
 Count = 1
-GDValue = 0
-metadata/_custom_type_script = "uid://ddtn3y2cjggu1"
 
 [node name="DispensadorPale" type="Node" parent="S7-1500-1"]
 
@@ -102,11 +57,3 @@ metadata/_custom_type_script = "uid://ddtn3y2cjggu1"
 [node name="Out" type="Node" parent="S7-1500-1/DispensadorPale"]
 
 [node name="InOut" type="Node" parent="S7-1500-1/DispensadorPale"]
-
-[node name="Node" type="Node" parent="." node_paths=PackedStringArray("PlcNode")]
-script = ExtResource("3_xinta")
-PlcNode = NodePath("../S7-1500-1")
-
-[node name="Node2" type="Node" parent="." node_paths=PackedStringArray("PlcNode")]
-script = ExtResource("4_f3x8x")
-PlcNode = NodePath("../S7-1500-1")

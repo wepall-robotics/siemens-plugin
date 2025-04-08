@@ -3,6 +3,7 @@ extends EditorInspectorPlugin
 
 var PLC_COMMANDS : PackedScene
 var _plc: PlcNode
+var BoolPropertySelector = preload("res://addons/siemens_plugin/components/plc/var_types/bool/bool_property_selector.gd")
 
 func _init():
 	PLC_COMMANDS = load("res://addons/siemens_plugin/components/controls/plc_commands.tscn")
@@ -12,8 +13,11 @@ func _can_handle(object) -> bool:
 	if object is PlcNode:
 		_plc = object
 		_connect_event_bus_signals()
+		return true
+	elif object is BoolItem:
+		return true
 
-	return object is PlcNode
+	return false
 
 ## Method to connect [b]EventBus signals[/b] to their respective handlers.
 func _connect_event_bus_signals() -> void:
@@ -53,6 +57,12 @@ func _parse_category(object, category):
 func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):
 	if name == "ghost_prop":
 		return true
+	if name == "VisualProperty" and object.VisualComponent != null:
+		# Crea un selector personalizado
+		var selector = BoolPropertySelector.new(object.VisualComponent)
+		add_property_editor(name, selector)
+		return true  # Reemplaza el editor por defecto
+	return false
 
 ## Creates command tools and adds them as custom controls.
 func _create_command_tools():
