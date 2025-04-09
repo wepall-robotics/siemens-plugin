@@ -49,6 +49,8 @@ func _connect_event_bus_signals() -> void:
 		EventBus.plc_connection_lost.connect(_on_plc_connection_lost)
 	if not EventBus.plc_disconnected.is_connected(_on_plc_disconnected):
 		EventBus.plc_disconnected.connect(_on_plc_disconnected)
+	if not EventBus.plc_already_disconnected.is_connected(_on_plc_already_disconnected):
+		EventBus.plc_already_disconnected.connect(_on_plc_already_disconnected)
 
 func _parse_category(object, category):
 	if category=="PlcCommands":
@@ -96,12 +98,10 @@ func _connect_plc():
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func():  NetworkUtils.CancelAllOperations()
+		"cancel_callback": func():  _plc.Data.CancelAllOperations()
 	}
 
-	print("Antes de conectar.")
 	EventBus.confirm_popup_invoked.emit(params, func(): 
-		print("Salta el evento de connect")
 		_plc.Data.ConnectPlc(EventBus))
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
@@ -147,6 +147,8 @@ func _on_plc_disconnection_failed(reason):
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 func _on_plc_already_disconnected(plc):
+	_plc.CurrentStatus = 1
+	_plc.Data.IsOnline = false
 	print("PLC was already disconnected.")
 
 ## Sends a ping to the [b]PLC[/b].

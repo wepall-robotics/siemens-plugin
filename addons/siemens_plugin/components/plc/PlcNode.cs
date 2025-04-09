@@ -61,8 +61,6 @@ public partial class PlcNode : Node
     [Export]
     public bool ValidConfiguration { get => _validConfiguration; set => _validConfiguration = value; }
 
-    [Export]
-    public DataGroup DataGroup { get; set; }
     public override string[] _GetConfigurationWarnings()
     {
         List<string> warnings = [];

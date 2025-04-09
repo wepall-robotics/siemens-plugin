@@ -59,11 +59,9 @@ namespace S7.Net
                 {
                     this.Close(); // Closes the connection with the PLC
                     eventBus?.EmitSignal("plc_disconnected", this);
-                    GD.Print("PLC disconnected.");
                 }
                 else
                 {
-                    GD.Print("El PLC already disconnected.");
                     eventBus?.EmitSignal("plc_already_disconnected", this);
                 }
             }
@@ -131,13 +129,7 @@ namespace S7.Net
                 try
                 {
                     // Ejecutar lecturas primero
-                    foreach (var action in _registeredActions.OfType<IReadAction>())
-                    {
-                        action.Execute();
-                    }
-
-                    // Ejecutar escrituras después
-                    foreach (var action in _registeredActions.OfType<IWriteAction>())
+                    foreach (var action in _registeredActions.OfType<IPlcAction>())
                     {
                         action.Execute();
                     }

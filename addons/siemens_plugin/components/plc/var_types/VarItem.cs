@@ -3,19 +3,19 @@ using System;
 
 namespace S7.Net.Types
 {
-public partial class DataItem : Node
-{
-    public enum AccessMode { Read, Write,ReadWrite }
-    [Export]
-    public AccessMode Mode { get; set; }
-    // [Export]
+    public partial class DataItem : Node
+    {
+        public enum AccessMode { Read, Write, ReadWrite }
+        [Export]
+        public AccessMode Mode { get; set; }
+        // [Export]
         // public Variant GDValue
         // {
         //     get =>S7TypeConverter.ConvertToVariant(Value, VarType);
         //     set => Value = S7TypeConverter.ConvertFromVariant(value, VarType);
         // }
-
-         private static class S7TypeConverter
+        public virtual void UpdateGDValue() { }
+        private static class S7TypeConverter
         {
             public static object ConvertFromVariant(Variant godotValue, VarType type)
             {
@@ -61,5 +61,5 @@ public partial class DataItem : Node
                 };
             }
         }
-}
+    }
 }
