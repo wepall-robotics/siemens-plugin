@@ -16,7 +16,7 @@ func _ready() -> void:
 	EventBus.plc_connection_lost.connect(func(plc: Plc): _on_plc_connection_changed(false))
 	EventBus.plc_disconnected.connect(func(plc: Plc): _on_plc_connection_changed(false))
 
-func set_up(plc: PlcNode) -> void:
+func set_up(plc: Plc) -> void:
 	$HFlowContainer/Connect.disabled = plc.CurrentStatus == 0
 	$HFlowContainer/Ping.disabled = plc.CurrentStatus == 0
 	$HFlowContainer/Disconnect.disabled  = plc.CurrentStatus != 0

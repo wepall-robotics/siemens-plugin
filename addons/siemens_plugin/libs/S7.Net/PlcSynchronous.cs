@@ -9,7 +9,7 @@ using Godot;
 //Implement synchronous methods here
 namespace S7.Net
 {
-    public partial class Plc : Resource
+    public partial class Plc : Node
     {
         /// <summary>
         /// Connects to the PLC and performs a COTP ConnectionRequest and S7 CommunicationSetup.

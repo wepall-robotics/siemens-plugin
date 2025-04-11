@@ -11,13 +11,3 @@ public interface IPlcAction
 {
     void Execute();
 }
-
-/// <summary>
-/// Marker interface for read operations
-/// </summary>
-public interface IReadAction : IPlcAction { }
-
-/// <summary>
-/// Marker interface for write operations
-/// </summary>
-public interface IWriteAction : IPlcAction { }

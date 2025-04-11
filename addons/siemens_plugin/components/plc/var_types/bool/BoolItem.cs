@@ -12,7 +12,7 @@ public partial class BoolItem : DataItem
     public delegate void ValueChangedEventHandler(bool newValue);
 
     [Export]
-    public Node VisualComponent
+    public override Node VisualComponent
     {
         get => _visualComponent;
         set
@@ -23,10 +23,37 @@ public partial class BoolItem : DataItem
     }
 
     [Export]
-    public string VisualProperty { get; set; }
+    public override string VisualProperty
+    {
+        get => _visualProperty;
+        set
+        {
+            if (_visualProperty == value) return;
+
+            _visualProperty = value;
+        }
+    }
+
+    private void OnVisualPropertyChanged(string propertyName)
+    {
+        if (propertyName == VisualProperty && VisualComponent != null)
+        {
+            try
+            {
+                var newValue = (bool)VisualComponent.Get(VisualProperty);
+                GDValue = newValue; // Update GDValue when VisualProperty changes
+            }
+            catch (Exception ex)
+            {
+                GD.PrintErr($"Error reading VisualProperty '{VisualProperty}': {ex.Message}");
+            }
+        }
+    }
 
     private Node _visualComponent;
-    private bool _gdValue;
+
+    private string _visualProperty;
+    private bool _gdValue = false;
 
     [Export]
     public bool GDValue
@@ -37,12 +64,13 @@ public partial class BoolItem : DataItem
             if (_gdValue != value)
             {
                 _gdValue = value;
-                // Value = value; // Sincronizar con el valor base
+                Value = value;
                 EmitSignal(SignalName.ValueChanged, value);
-                UpdateVisualComponent(value);
             }
         }
     }
+
+
 
     private void UpdateVisualComponent(bool value)
     {
@@ -56,11 +84,9 @@ public partial class BoolItem : DataItem
     {
         try
         {
-            if (Value is byte byteValue)
+            if (Value is bool boolValue)
             {
-                int bitPosition = BitAdr % 8;
-                bool bitValue = (byteValue & (1 << bitPosition)) != 0;
-                _gdValue = bitValue;
+                _gdValue = boolValue;
                 UpdateVisualComponent(_gdValue);
                 return;
             }
@@ -70,4 +96,12 @@ public partial class BoolItem : DataItem
             GD.PrintErr($"Error updating GDValue: {ex.Message}");
         }
     }
+
+    public BoolItem()
+    {
+        VarType = VarType.Bit;
+        Count = 1;
+        Value = false;
+    }
+
 }

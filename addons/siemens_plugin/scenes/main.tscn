@@ -1,18 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=4 format=3 uid="uid://cwyxf78y08kuf"]
 
-[ext_resource type="PackedScene" uid="uid://1od8wyhv4aio" path="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500.tscn" id="1_ums1x"]
-[ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/siemens_plugin/libs/S7.Net/Plc.cs" id="2_f3x8x"]
-[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/components/plc/DataGroup.cs" id="4_3vqly"]
-[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/bool/BoolItem.cs" id="5_3vqly"]
-
-[sub_resource type="Resource" id="Resource_f3x8x"]
-script = ExtResource("2_f3x8x")
-IP = "192.168.0.200"
-CPU = 40
-Rack = 0
-Slot = 1
-IsOnline = false
-metadata/_custom_type_script = "uid://cpky2rr1o1uln"
+[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/components/plc/s7-1500/s7_1500.tscn" id="1_hcxmn"]
+[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/components/plc/DataGroup.cs" id="2_xinta"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/bool/BoolItem.cs" id="3_f3x8x"]
 
 [node name="Main" type="Node3D"]
 
@@ -22,36 +12,20 @@ calculate_tangents = false
 radius = 0.0200195
 height = 1.9248
 
-[node name="S7-1500" parent="." instance=ExtResource("1_ums1x")]
-Data = SubResource("Resource_f3x8x")
+[node name="S7-1500" parent="." instance=ExtResource("1_hcxmn")]
+IP = "192.168.0.200"
 CurrentStatus = 1
-ValidConfiguration = true
 
 [node name="DataGroup" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
-script = ExtResource("4_3vqly")
-Items = [NodePath("BoolItem"), NodePath("BoolItem2"), NodePath("BoolItem3")]
+script = ExtResource("2_xinta")
+Items = [NodePath("BoolItem")]
 metadata/_custom_type_script = "uid://cimys5c55w3ny"
 
 [node name="BoolItem" type="Node" parent="S7-1500/DataGroup" node_paths=PackedStringArray("VisualComponent")]
-script = ExtResource("5_3vqly")
+script = ExtResource("3_f3x8x")
 VisualComponent = NodePath("../../../CSGCylinder3D")
-VisualProperty = "calculate_tangents"
-DataType = 129
-VarType = 1
-Count = 1
-
-[node name="BoolItem2" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("5_3vqly")
-DataType = 129
-VarType = 1
-BitAdr = 1
-Count = 1
-metadata/_custom_type_script = "uid://bma7k4kp1anub"
-
-[node name="BoolItem3" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("5_3vqly")
-DataType = 129
-VarType = 1
-BitAdr = 2
+VisualProperty = "visible"
+Mode = 1
+DataType = 130
 Count = 1
 metadata/_custom_type_script = "uid://bma7k4kp1anub"

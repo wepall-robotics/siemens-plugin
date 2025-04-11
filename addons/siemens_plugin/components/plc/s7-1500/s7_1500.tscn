@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bc274oucqoi8a"]
+
+[ext_resource type="PackedScene" uid="uid://c6vdnhwy7iybh" path="res://addons/siemens_plugin/components/plc/s7-1500/S7-1500.glb" id="1_ubcl7"]
+[ext_resource type="Script" uid="uid://cpky2rr1o1uln" path="res://addons/siemens_plugin/libs/S7.Net/Plc.cs" id="2_qmkyb"]
+
+[node name="S7-1500" groups=["Plcs"] instance=ExtResource("1_ubcl7")]
+script = ExtResource("2_qmkyb")
+ValidConfiguration = true

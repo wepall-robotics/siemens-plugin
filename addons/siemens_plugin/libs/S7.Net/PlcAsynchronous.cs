@@ -15,7 +15,7 @@ namespace S7.Net
     /// <summary>
     /// Creates an instance of S7.Net driver
     /// </summary>
-    public partial class Plc : Resource
+    public partial class Plc : Node
     {
         /// <summary>
         /// Connects to the PLC and performs a COTP ConnectionRequest and S7 CommunicationSetup.

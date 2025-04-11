@@ -8,20 +8,17 @@ namespace S7.Net.Types
         public enum AccessMode { Read, Write, ReadWrite }
         [Export]
         public AccessMode Mode { get; set; }
-        // [Export]
-        // public Variant GDValue
-        // {
-        //     get =>S7TypeConverter.ConvertToVariant(Value, VarType);
-        //     set => Value = S7TypeConverter.ConvertFromVariant(value, VarType);
-        // }
+
+        public virtual Node VisualComponent { get; set; }
+        public virtual string VisualProperty { get; set; }
         public virtual void UpdateGDValue() { }
-        private static class S7TypeConverter
+        public static class S7TypeConverter
         {
             public static object ConvertFromVariant(Variant godotValue, VarType type)
             {
                 return type switch
                 {
-                    VarType.Bit => godotValue.AsBool(),
+                    VarType.Bit => Convert.ToBoolean(godotValue),
                     VarType.Byte => godotValue.AsByte(),
                     VarType.Word => godotValue.AsUInt16(),
                     VarType.Int => godotValue.AsInt16(),

@@ -2,7 +2,7 @@
 extends EditorInspectorPlugin
 
 var PLC_COMMANDS : PackedScene
-var _plc: PlcNode
+var _plc: Plc
 var BoolPropertySelector = preload("res://addons/siemens_plugin/components/plc/var_types/bool/bool_property_selector.gd")
 
 func _init():
@@ -10,7 +10,7 @@ func _init():
 
 # Determines if the given object can be handled by this controller.
 func _can_handle(object) -> bool:
-	if object is PlcNode:
+	if object is Plc:
 		_plc = object
 		_connect_event_bus_signals()
 		return true
@@ -76,10 +76,10 @@ func _create_command_tools():
 ## [b]Returns:[/b] [color=#70bafa]bool[/color] - [i]True if the connection is successful, false otherwise.[/i]
 func _connect_plc():
 	# Validate the IP address
-	if not _plc.Data or not _plc.ValidConfiguration:
+	if not _plc or not _plc.ValidConfiguration:
 		return
 	
-	if !Plc.ValidateIP(_plc.Data.IP):
+	if !Plc.ValidateIP(_plc.IP):
 		var params = {
 			"title": "Invalid IP Address",
 			"message": "The IP address is invalid. Please enter a valid IP address.",
@@ -98,11 +98,11 @@ func _connect_plc():
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func():  _plc.Data.CancelAllOperations()
+		"cancel_callback": func():  _plc.CancelAllOperations()
 	}
 
 	EventBus.confirm_popup_invoked.emit(params, func(): 
-		_plc.Data.ConnectPlc(EventBus))
+		_plc.ConnectPlc(EventBus))
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 	var params = {
@@ -110,7 +110,7 @@ func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 		"message": "Attempt %d/%d: Establishing connection..." % [attempt, max_attempts],
 		"progress": true,
 		"cancel_text": "Cancel",
-		"cancel_callback": func():  _plc.Data.CancelAllOperations()
+		"cancel_callback": func():  _plc.CancelAllOperations()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
@@ -119,7 +119,7 @@ func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 ## - [param force]: [color=#70bafa]bool[/color] - If true, forces the disconnection.
 ## [b]Returns:[/b] [color=#70bafa]void[/color]
 func _disconnect():
-	if not _plc.Data or _plc.CurrentStatus != 0:
+	if not _plc or _plc.CurrentStatus != 0:
 		EventBus.plc_disconnection_failed.emit("PLC not configured or connected.", func(): pass)
 		return
 
@@ -128,12 +128,12 @@ func _disconnect():
 		"message": "Are you sure you want to disconnect the PLC?",
 		"ok_text": "Yes",
 		"cancel_text": "No",
-		"ok_callback": func(): _plc.Data.Disconnect(EventBus)
+		"ok_callback": func(): _plc.Disconnect(EventBus)
 	}, func(): pass)
 
 func _on_plc_disconnected(plc):
 	_plc.CurrentStatus = 1
-	_plc.Data.IsOnline = false
+	_plc.IsOnline = false
 	print("PLC successfully disconnected.")
 
 func _on_plc_disconnection_failed(reason):
@@ -148,7 +148,7 @@ func _on_plc_disconnection_failed(reason):
 
 func _on_plc_already_disconnected(plc):
 	_plc.CurrentStatus = 1
-	_plc.Data.IsOnline = false
+	_plc.IsOnline = false
 	print("PLC was already disconnected.")
 
 ## Sends a ping to the [b]PLC[/b].
@@ -156,9 +156,9 @@ func _on_plc_already_disconnected(plc):
 ## - [color=#70bafa]string[/color]: The response from the PLC.
 func _ping() -> void:
 	# Validate the IP address
-	if not _plc.Data or _plc.CurrentStatus == 0 or not _plc.ValidConfiguration:
+	if not _plc or _plc.CurrentStatus == 0 or not _plc.ValidConfiguration:
 		return
-	if !Plc.ValidateIP(_plc.Data.IP):
+	if !Plc.ValidateIP(_plc.IP):
 		
 		var params = {
 			"title": "Invalid IP Address",
@@ -178,10 +178,10 @@ func _ping() -> void:
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
 		"cancel_text": "Cancel",
-		"cancel_callback": func(): _plc.Data.CancelAllOperations()
+		"cancel_callback": func(): _plc.CancelAllOperations()
 	}
 
-	EventBus.confirm_popup_invoked.emit(params, func(): _plc.Data.PingPlc(EventBus))
+	EventBus.confirm_popup_invoked.emit(params, func(): _plc.PingPlc(EventBus))
 
 # Function to modify content of the confirmation dialog
 # when a connection to plc is accomplish.
@@ -201,7 +201,7 @@ func _on_plc_connected(plcData):
 func _on_plc_connection_lost(plcData):
 	print("Connection lost.")
 	_plc.CurrentStatus = 1
-	_plc.Data.IsOnline = false
+	_plc.IsOnline = false
 	
 	var params = {
 		"title": "Connection Lost",
@@ -230,7 +230,7 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 		"title": "PLC Ping",
 		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
 		"progress": true,
-		"cancel_callback": func():  _plc.Data.CancelAllOperations()
+		"cancel_callback": func():  _plc.CancelAllOperations()
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
@@ -251,7 +251,7 @@ func _on_ping_completed(ip: String, success: bool) -> void:
 ## [b]Parameters:[/b]
 ## - [param duration]: [color=#70bafa]int[/color] - Duration in seconds to monitor signals.
 func _online():
-	_plc.Data.IsOnline = !_plc.Data.IsOnline
+	_plc.IsOnline = !_plc.IsOnline
 
 ## Handles the import event.
 func _import():

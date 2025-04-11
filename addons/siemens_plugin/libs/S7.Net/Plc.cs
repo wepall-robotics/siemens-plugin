@@ -16,7 +16,7 @@ namespace S7.Net
     /// </summary>
     [Tool]
     [GlobalClass]
-    public partial class Plc : Resource, IDisposable
+    public partial class Plc : Node, IDisposable
     {
         /// <summary>
         /// The default port for the S7 protocol.
@@ -39,12 +39,6 @@ namespace S7.Net
         private string _ip = "192.168.0.1";
 
         /// <summary>
-        /// IP address of the PLC
-        /// </summary>
-        [Export]
-        public string IP { get => _ip; set { _ip = value; EmitChanged();}}
-
-        /// <summary>
         /// PORT Number of the PLC, default is 102
         /// </summary>
         public int Port { get; set; } = DefaultPort;
@@ -53,24 +47,6 @@ namespace S7.Net
         /// The TSAP addresses used during the connection request.
         /// </summary>
         public TsapPair TsapPair { get; set; } = TsapPair.GetDefaultTsapPair(CpuType.S71500, 0, 1);
-
-        /// <summary>
-        /// CPU type of the PLC
-        /// </summary>
-        [Export]
-        public CpuType CPU { get; set; } = CpuType.S71500;
-
-        /// <summary>
-        /// Rack of the PLC
-        /// </summary>
-        [Export]
-        public Int16 Rack { get; set; } = 0;
-
-        /// <summary>
-        /// Slot of the CPU of the PLC
-        /// </summary>
-        [Export]
-        public Int16 Slot { get; set; } = 1;
 
         /// <summary>
         /// Max PDU size this cpu supports

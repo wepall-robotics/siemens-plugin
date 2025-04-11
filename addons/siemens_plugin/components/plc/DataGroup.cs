@@ -11,10 +11,11 @@ public partial class DataGroup : Node, IPlcAction
 {
     [Export]
     public Godot.Collections.Array<DataItem> Items { get; set; } = new();
-    public PlcNode? ParentPlcNode => GetParent() as PlcNode;
-    public Plc? ParentPlc => ParentPlcNode?.Data;
+    public Plc? ParentPlc => GetParent() as Plc;
 
     private bool _isRegistered;
+    // Class field to store items
+    private List<DataItem> _itemsToProcess;
 
     public void ReadAll()
     {
@@ -23,31 +24,51 @@ public partial class DataGroup : Node, IPlcAction
             GD.PrintErr("PLC is null, cannot read data items.");
             return;
         }
-        // var groupedItems = Items
-        //         .Where(item => item.Mode != DataItem.AccessMode.Write)
-        //         .GroupBy(item => new { item.DataType, item.DB })
-        //         .ToList();
-
-        // foreach (var group in groupedItems)
-        // {
-        //     try
-        //     {
-        //         // Leer cada grupo por separado
-        //         ParentPlc.ReadMultipleVars(group.ToList());
-        //         // Actualizar valores después de cada lectura grupal
-        //         group.ToList().ForEach(item => item.UpdateGDValue());
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         GD.PrintErr($"Error reading group: {ex.Message}");
-        //     }
-        // }
         List<DataItem> s7Items = Items
             .Where(item => item.Mode != DataItem.AccessMode.Write)
             .ToList();
 
+        if (s7Items.Count == 0) return;
+
         ParentPlc.ReadMultipleVars(s7Items);
         s7Items.ForEach(item => item.UpdateGDValue());
+    }
+
+    public void WriteAll()
+    {
+        if (ParentPlc == null)
+        {
+            GD.PrintErr("PLC is null, cannot write data items.");
+            return;
+        }
+
+        // Store items in a class field instead of passing as parameter
+        _itemsToProcess = Items
+            .Where(item => item.Mode != DataItem.AccessMode.Read)
+            .ToList();
+
+        if (_itemsToProcess.Count == 0) return;
+
+        // Call the method without parameters
+        CallDeferred(nameof(DeferredWriteAll));
+    }
+
+    // Public method that uses the class field
+    public void DeferredWriteAll()
+    {
+        foreach (var item in _itemsToProcess)
+        {
+            if (item.VisualComponent != null && !string.IsNullOrEmpty(item.VisualProperty))
+            {
+                // Falta inferir el tipo del valor a través de GDValue pero con un método que
+                // será heredable.
+                var value = item.VisualComponent.Get(item.VisualProperty);
+                item.Value = value.AsBool();
+                GD.Print($"{item.VisualComponent.Name} | {item.VisualProperty} = {value}");
+            }
+        }
+
+        ParentPlc.Write(_itemsToProcess.ToArray());
     }
 
     private void UpdateItemList()
@@ -75,26 +96,24 @@ public partial class DataGroup : Node, IPlcAction
         base._Notification(what);
 
         if (what == NotificationChildOrderChanged)
-        {
             UpdateItemList();
-        }
 
         if (what == NotificationParented)
         {
-            if (GetParent() is PlcNode plcNode)
+            if (GetParent() is Plc plc)
             {
                 if (!_isRegistered)
                 {
-                    plcNode.Data?.RegisterAction(this);
+                    plc.RegisterAction(this);
                     _isRegistered = true;
                 }
             }
         }
         else if (what == NotificationUnparented)
         {
-            if (_isRegistered && ParentPlcNode != null)
+            if (_isRegistered && ParentPlc != null)
             {
-                ParentPlcNode.Data?.RemoveAction(this);
+                ParentPlc.RemoveAction(this);
                 _isRegistered = false;
             }
         }
@@ -120,21 +139,11 @@ public partial class DataGroup : Node, IPlcAction
         try
         {
             ReadAll();
+            WriteAll();
         }
         catch (Exception ex)
         {
             GD.PrintErr($"Error executing action: {ex.Message}");
         }
     }
-
-
-    // public void WriteAll(Plc plc)
-    // {
-    //     foreach (var item in Items)
-    //     {
-    //         var value = item.GDValue;
-    //         plc.Write(item.DataType,item.DB, item.StartByteAdr, value);
-    //     }
-    // }
-
 }
