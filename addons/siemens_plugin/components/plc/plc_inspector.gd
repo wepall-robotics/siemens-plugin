@@ -3,7 +3,8 @@ extends EditorInspectorPlugin
 
 var PLC_COMMANDS : PackedScene
 var _plc: Plc
-var BoolPropertySelector = preload("res://addons/siemens_plugin/components/plc/var_types/bool/bool_property_selector.gd")
+var PropertySelector = preload("res://addons/siemens_plugin/components/plc/var_types/property_selector.gd")
+var item_type
 
 func _init():
 	PLC_COMMANDS = load("res://addons/siemens_plugin/components/controls/plc_commands.tscn")
@@ -14,7 +15,7 @@ func _can_handle(object) -> bool:
 		_plc = object
 		_connect_event_bus_signals()
 		return true
-	elif object is BoolItem:
+	elif object is DataItem:
 		return true
 
 	return false
@@ -60,10 +61,14 @@ func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wi
 	if name == "ghost_prop":
 		return true
 	if name == "VisualProperty" and object.VisualComponent != null:
-		# Crea un selector personalizado
-		var selector = BoolPropertySelector.new(object.VisualComponent)
+		var t
+		match object:
+			var x when x is BoolItem: t = TYPE_BOOL
+			var x when x is ByteItem: t = TYPE_INT
+			
+		var selector = PropertySelector.new(object.VisualComponent, t)
 		add_property_editor(name, selector)
-		return true  # Reemplaza el editor por defecto
+		return true
 	return false
 
 ## Creates command tools and adds them as custom controls.

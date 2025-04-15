@@ -59,13 +59,7 @@ public partial class DataGroup : Node, IPlcAction
         foreach (var item in _itemsToProcess)
         {
             if (item.VisualComponent != null && !string.IsNullOrEmpty(item.VisualProperty))
-            {
-                // Falta inferir el tipo del valor a través de GDValue pero con un método que
-                // será heredable.
-                var value = item.VisualComponent.Get(item.VisualProperty);
-                item.Value = value.AsBool();
-                GD.Print($"{item.VisualComponent.Name} | {item.VisualProperty} = {value}");
-            }
+                item.UpdateValue();
         }
 
         ParentPlc.Write(_itemsToProcess.ToArray());

@@ -34,22 +34,6 @@ public partial class BoolItem : DataItem
         }
     }
 
-    private void OnVisualPropertyChanged(string propertyName)
-    {
-        if (propertyName == VisualProperty && VisualComponent != null)
-        {
-            try
-            {
-                var newValue = (bool)VisualComponent.Get(VisualProperty);
-                GDValue = newValue; // Update GDValue when VisualProperty changes
-            }
-            catch (Exception ex)
-            {
-                GD.PrintErr($"Error reading VisualProperty '{VisualProperty}': {ex.Message}");
-            }
-        }
-    }
-
     private Node _visualComponent;
 
     private string _visualProperty;
@@ -97,9 +81,26 @@ public partial class BoolItem : DataItem
         }
     }
 
+    public override void UpdateValue()
+    {
+        try
+        {
+            if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
+            {
+                var value = VisualComponent.Get(VisualProperty);
+                GDValue = value.AsBool();
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"Error updating Value: {ex.Message}");
+        }
+    }
+
     public BoolItem()
     {
         VarType = VarType.Bit;
+        DataType = DataType.Input;
         Count = 1;
         Value = false;
     }

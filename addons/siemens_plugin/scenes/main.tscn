@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=5 format=3 uid="uid://cwyxf78y08kuf"]
 
 [ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/components/plc/s7-1500/s7_1500.tscn" id="1_hcxmn"]
 [ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/components/plc/DataGroup.cs" id="2_xinta"]
-[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/bool/BoolItem.cs" id="3_f3x8x"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/BoolItem.cs" id="3_f3x8x"]
+[ext_resource type="Script" uid="uid://l2ehxf6cjo1q" path="res://addons/siemens_plugin/components/plc/var_types/ByteItem.cs" id="4_f3x8x"]
 
 [node name="Main" type="Node3D"]
 
@@ -14,18 +15,31 @@ height = 1.9248
 
 [node name="S7-1500" parent="." instance=ExtResource("1_hcxmn")]
 IP = "192.168.0.200"
-CurrentStatus = 1
+CurrentStatus = 0
+IsOnline = true
 
 [node name="DataGroup" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_xinta")
-Items = [NodePath("BoolItem")]
+Items = [NodePath("BoolItem"), NodePath("ByteItem")]
 metadata/_custom_type_script = "uid://cimys5c55w3ny"
 
 [node name="BoolItem" type="Node" parent="S7-1500/DataGroup" node_paths=PackedStringArray("VisualComponent")]
 script = ExtResource("3_f3x8x")
 VisualComponent = NodePath("../../../CSGCylinder3D")
 VisualProperty = "visible"
+GDValue = true
 Mode = 1
 DataType = 130
 Count = 1
 metadata/_custom_type_script = "uid://bma7k4kp1anub"
+
+[node name="ByteItem" type="Node" parent="S7-1500/DataGroup" node_paths=PackedStringArray("VisualComponent")]
+script = ExtResource("4_f3x8x")
+VisualComponent = NodePath(".")
+VisualProperty = "GDValue"
+Mode = 1
+DataType = 130
+VarType = 1
+StartByteAdr = 1
+Count = 1
+metadata/_custom_type_script = "uid://l2ehxf6cjo1q"
