@@ -60,6 +60,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 tooltip_text = "Monitor live signals from the PLC."
 disabled = true
+toggle_mode = true
 text = "Online"
 icon = ExtResource("3_s5toc")
 

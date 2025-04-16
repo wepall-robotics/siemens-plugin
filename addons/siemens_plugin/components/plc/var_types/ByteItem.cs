@@ -4,12 +4,12 @@ using S7.Net.Types;
 using System;
 
 [Tool]
-[Icon("uid://06dunvu30lio")]
+[Icon("uid://dr8n7nyfxwhwc")]
 [GlobalClass]
 public partial class ByteItem : DataItem
 {
     [Signal]
-    public delegate void ValueChangedEventHandler(bool newValue);
+    public delegate void ValueChangedEventHandler(byte newValue);
 
     [Export]
     public override Node VisualComponent
@@ -72,7 +72,6 @@ public partial class ByteItem : DataItem
             {
                 _gdValue = byteValue;
                 UpdateVisualComponent(_gdValue);
-                return;
             }
         }
         catch (Exception ex)

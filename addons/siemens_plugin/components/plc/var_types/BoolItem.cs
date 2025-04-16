@@ -29,13 +29,11 @@ public partial class BoolItem : DataItem
         set
         {
             if (_visualProperty == value) return;
-
             _visualProperty = value;
         }
     }
 
     private Node _visualComponent;
-
     private string _visualProperty;
     private bool _gdValue = false;
 
@@ -72,7 +70,6 @@ public partial class BoolItem : DataItem
             {
                 _gdValue = boolValue;
                 UpdateVisualComponent(_gdValue);
-                return;
             }
         }
         catch (Exception ex)
