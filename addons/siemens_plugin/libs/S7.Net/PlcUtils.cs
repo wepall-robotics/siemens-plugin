@@ -26,7 +26,7 @@ namespace S7.Net
         const int MAX_PING_ATTEMPTS = 4;
         const int PING_TIMEOUT = 1000;
         const int RETRY_BASE_DELAY = 500;
-        const int DEFAULT_MONITOR_INTERVAL = 50;
+        public const int DEFAULT_MONITOR_INTERVAL = 50;
         #endregion
 
         #region Private Fields
@@ -442,7 +442,7 @@ namespace S7.Net
                 {
                     await Task.Delay(DEFAULT_MONITOR_INTERVAL);
 
-                    if (IsOnline)
+                    if (IsOnline && this.IsConnected)
                     {
                         ProcessRegisteredActions(); // Process registered actions
                         eventBus.CallDeferred("emit_signal", "plc_data_updated", this);

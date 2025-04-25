@@ -36,11 +36,13 @@ enabled=PackedStringArray("res://addons/siemens_plugin/plugin.cfg")
 
 folder_colors={
 "res://addons/siemens_plugin/components/": "red",
-"res://addons/siemens_plugin/data/": "orange",
-"res://addons/siemens_plugin/icons/": "yellow",
-"res://addons/siemens_plugin/scenes/": "blue",
-"res://addons/siemens_plugin/scripts/": "purple",
-"res://addons/siemens_plugin/themes/": "pink"
+"res://addons/siemens_plugin/examples/": "red",
+"res://addons/siemens_plugin/icons/": "orange",
+"res://addons/siemens_plugin/libs/": "yellow",
+"res://addons/siemens_plugin/plc/": "green",
+"res://addons/siemens_plugin/scenes/": "teal",
+"res://addons/siemens_plugin/scripts/": "blue",
+"res://addons/siemens_plugin/ui/": "purple"
 }
 
 [global_group]

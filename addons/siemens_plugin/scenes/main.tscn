@@ -1,13 +1,16 @@
-[gd_scene load_steps=9 format=3 uid="uid://cwyxf78y08kuf"]
+[gd_scene load_steps=12 format=3 uid="uid://cwyxf78y08kuf"]
 
-[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/components/plc/s7-1500/s7_1500.tscn" id="1_hcxmn"]
-[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/components/plc/DataGroup.cs" id="2_xinta"]
-[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/components/plc/var_types/BoolItem.cs" id="3_f3x8x"]
-[ext_resource type="Script" uid="uid://l2ehxf6cjo1q" path="res://addons/siemens_plugin/components/plc/var_types/ByteItem.cs" id="4_f3x8x"]
-[ext_resource type="Script" uid="uid://dqrh55ojrpuw3" path="res://addons/siemens_plugin/components/plc/var_types/CounterItem.cs" id="5_2jegt"]
-[ext_resource type="Script" uid="uid://byhmjmknjfadt" path="res://addons/siemens_plugin/components/plc/var_types/DIntItem.cs" id="6_3vqly"]
-[ext_resource type="Script" uid="uid://bcbqwmy7it76m" path="res://addons/siemens_plugin/components/plc/var_types/IntItem.cs" id="7_r6d37"]
-[ext_resource type="Script" uid="uid://uslqr6m52wn2" path="res://addons/siemens_plugin/components/plc/var_types/TimerItem.cs" id="8_r6d37"]
+[ext_resource type="Script" uid="uid://byhmjmknjfadt" path="res://addons/siemens_plugin/plc/var_items/DIntItem.cs" id="1_63m38"]
+[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/plc/s7-1500/s7_1500.tscn" id="1_hcxmn"]
+[ext_resource type="Script" uid="uid://o8ty3qrk7aby" path="res://addons/siemens_plugin/plc/var_items/DWordItem.cs" id="2_0sypd"]
+[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/plc/var_groups/GroupData.cs" id="2_xinta"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/plc/var_items/BoolItem.cs" id="3_f3x8x"]
+[ext_resource type="Script" uid="uid://bcbqwmy7it76m" path="res://addons/siemens_plugin/plc/var_items/IntItem.cs" id="3_saywg"]
+[ext_resource type="Script" uid="uid://bk7ftrcvkpmsx" path="res://addons/siemens_plugin/plc/var_items/RealItem.cs" id="4_21wqd"]
+[ext_resource type="Script" uid="uid://scud14273udh" path="res://addons/siemens_plugin/plc/var_items/StringItem.cs" id="5_k1g66"]
+[ext_resource type="Script" uid="uid://l2ehxf6cjo1q" path="res://addons/siemens_plugin/plc/var_items/ByteItem.cs" id="11_hl8vw"]
+[ext_resource type="Script" uid="uid://5lukueqej4rr" path="res://addons/siemens_plugin/plc/var_items/LRealItem.cs" id="12_0sypd"]
+[ext_resource type="Script" uid="uid://bntgjh6xuixmp" path="res://addons/siemens_plugin/plc/var_items/TimeItem.cs" id="13_saywg"]
 
 [node name="Main" type="Node3D"]
 
@@ -23,54 +26,97 @@ CurrentStatus = 1
 
 [node name="DataGroup" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_xinta")
-Items = [NodePath("BoolItem"), NodePath("ByteItem"), NodePath("CounterItem"), NodePath("DIntItem"), NodePath("IntItem"), NodePath("TimerItem")]
+Items = [NodePath("BoolItem"), NodePath("ByteItem"), NodePath("BoolItem2"), NodePath("IntItem"), NodePath("DIntItem"), NodePath("DWordItem"), NodePath("RealItem"), NodePath("StringItem"), NodePath("TimeItem"), NodePath("LRealItem")]
 metadata/_custom_type_script = "uid://cimys5c55w3ny"
 
-[node name="BoolItem" type="Node" parent="S7-1500/DataGroup" node_paths=PackedStringArray("VisualComponent")]
+[node name="BoolItem" type="Node" parent="S7-1500/DataGroup"]
 script = ExtResource("3_f3x8x")
-VisualComponent = NodePath("../../../CSGCylinder3D")
-VisualProperty = "visible"
-GDValue = true
-Mode = 1
-DataType = 130
+DataType = 131
 Count = 1
+Mode = 1
 metadata/_custom_type_script = "uid://bma7k4kp1anub"
 
-[node name="ByteItem" type="Node" parent="S7-1500/DataGroup" node_paths=PackedStringArray("VisualComponent")]
-script = ExtResource("4_f3x8x")
-VisualComponent = NodePath(".")
-VisualProperty = "GDValue"
-Mode = 1
-DataType = 130
+[node name="ByteItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("11_hl8vw")
+GDValue = 10
+DataType = 131
 VarType = 1
 StartByteAdr = 1
 Count = 1
 metadata/_custom_type_script = "uid://l2ehxf6cjo1q"
 
-[node name="CounterItem" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("5_2jegt")
-DataType = 28
-VarType = 12
+[node name="BoolItem2" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("3_f3x8x")
+DataType = 132
+DB = 1
 Count = 1
-metadata/_custom_type_script = "uid://dqrh55ojrpuw3"
-
-[node name="DIntItem" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("6_3vqly")
-DataType = 129
-VarType = 5
-Count = 1
-metadata/_custom_type_script = "uid://byhmjmknjfadt"
+metadata/_custom_type_script = "uid://bma7k4kp1anub"
 
 [node name="IntItem" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("7_r6d37")
-DataType = 129
+script = ExtResource("3_saywg")
+GDValue = 7
+DataType = 132
 VarType = 4
+DB = 1
+StartByteAdr = 20
 Count = 1
+Mode = 2
 metadata/_custom_type_script = "uid://bcbqwmy7it76m"
 
-[node name="TimerItem" type="Node" parent="S7-1500/DataGroup"]
-script = ExtResource("8_r6d37")
-DataType = 29
-VarType = 11
+[node name="DIntItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("1_63m38")
+GDValue = 15000
+DataType = 131
+VarType = 5
+StartByteAdr = 3
 Count = 1
-metadata/_custom_type_script = "uid://uslqr6m52wn2"
+Mode = 1
+metadata/_custom_type_script = "uid://byhmjmknjfadt"
+
+[node name="DWordItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("2_0sypd")
+GDValue = 15123
+DataType = 131
+VarType = 3
+StartByteAdr = 8
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://o8ty3qrk7aby"
+
+[node name="RealItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("4_21wqd")
+GDValue = 2000.0
+DataType = 131
+VarType = 6
+StartByteAdr = 200
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://bk7ftrcvkpmsx"
+
+[node name="StringItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("5_k1g66")
+GDValue = "?Venga ya"
+DataType = 132
+VarType = 8
+DB = 1
+StartByteAdr = 24
+Count = 20
+metadata/_custom_type_script = "uid://scud14273udh"
+
+[node name="TimeItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("13_saywg")
+GDValue = 1000000
+DataType = 131
+VarType = 16
+StartByteAdr = 204
+Count = 1
+metadata/_custom_type_script = "uid://bntgjh6xuixmp"
+
+[node name="LRealItem" type="Node" parent="S7-1500/DataGroup"]
+script = ExtResource("12_0sypd")
+GDValue = 180000.0
+DataType = 131
+VarType = 7
+StartByteAdr = 208
+Count = 1
+metadata/_custom_type_script = "uid://5lukueqej4rr"
