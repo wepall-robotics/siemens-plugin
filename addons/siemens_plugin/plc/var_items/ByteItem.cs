@@ -6,39 +6,47 @@ using System;
 [Tool]
 [Icon("uid://dr8n7nyfxwhwc")]
 [GlobalClass]
+/// <summary>
+/// Represents a byte data item that interacts with a visual component in the Godot engine.
+/// This class provides functionality to synchronize a byte value between the PLC and a visual property.
+/// </summary>
 public partial class ByteItem : DataItem
 {
+    #region Signals
+
+    /// <summary>
+    /// Signal emitted when the byte value changes.
+    /// </summary>
     [Signal]
     public delegate void ValueChangedEventHandler(byte newValue);
 
-    [Export]
-    public override Node VisualComponent
-    {
-        get => _visualComponent;
-        set
-        {
-            _visualComponent = value;
-            NotifyPropertyListChanged();
-        }
-    }
+    #endregion
 
-    [Export]
-    public override string VisualProperty
-    {
-        get => _visualProperty;
-        set
-        {
-            if (_visualProperty == value) return;
+    #region Fields
 
-            _visualProperty = value;
-        }
-    }
-
-    private Node _visualComponent;
-
-    private string _visualProperty;
+    /// <summary>
+    /// Cached value of the byte data item in Godot.
+    /// </summary>
     private byte _gdValue = default;
 
+    /// <summary>
+    /// Reference to the visual component associated with this data item.
+    /// </summary>
+    private Node _visualComponent;
+
+    /// <summary>
+    /// Name of the property in the visual component to bind to.
+    /// </summary>
+    private string _visualProperty;
+
+    #endregion
+    
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the byte value in Godot.
+    /// When set, it updates the PLC value and emits a signal.
+    /// </summary>
     [Export]
     public byte GDValue
     {
@@ -54,16 +62,55 @@ public partial class ByteItem : DataItem
         }
     }
 
-
-
-    private void UpdateVisualComponent(byte value)
+    /// <summary>
+    /// Gets or sets the visual component associated with this data item.
+    /// </summary>
+    [Export]
+    public override Node VisualComponent
     {
-        if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
+        get => _visualComponent;
+        set
         {
-            VisualComponent.Set(VisualProperty, value);
+            _visualComponent = value;
+            NotifyPropertyListChanged();
         }
     }
 
+    /// <summary>
+    /// Gets or sets the name of the visual property to bind to.
+    /// </summary>
+    [Export]
+    public override string VisualProperty
+    {
+        get => _visualProperty;
+        set
+        {
+            if (_visualProperty == value) return;
+            _visualProperty = value;
+        }
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Updates the visual component's property with the given byte value.
+    /// </summary>
+    /// <param name="value">The byte value to set in the visual component.</param>
+    private void UpdateVisualComponent(byte value)
+    {
+        if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
+            VisualComponent.Set(VisualProperty, value);
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Updates the Godot value based on the PLC value and synchronizes it with the visual component.
+    /// </summary>
     public override void UpdateGDValue()
     {
         try
@@ -80,6 +127,9 @@ public partial class ByteItem : DataItem
         }
     }
 
+    /// <summary>
+    /// Updates the PLC value based on the visual component's property value.
+    /// </summary>
     public override void UpdateValue()
     {
         try
@@ -96,6 +146,13 @@ public partial class ByteItem : DataItem
         }
     }
 
+    #endregion
+
+    #region Constructor
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ByteItem"/> class with default values.
+    /// </summary>
     public ByteItem()
     {
         VarType = VarType.Byte;
@@ -104,4 +161,5 @@ public partial class ByteItem : DataItem
         Value = (byte)0;
     }
 
+    #endregion
 }

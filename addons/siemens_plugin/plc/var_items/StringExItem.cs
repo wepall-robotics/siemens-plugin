@@ -6,37 +6,47 @@ using System;
 [Tool]
 [Icon("uid://q1g1q5gfjrw6")]
 [GlobalClass]
+/// <summary>
+/// Represents an extended string (StringEx) data item that interacts with a visual component in the Godot engine.
+/// This class provides functionality to synchronize a string value between the PLC and a visual property.
+/// </summary>
 public partial class StringExItem : DataItem
 {
+    #region Signals
+
+    /// <summary>
+    /// Signal emitted when the string value changes.
+    /// </summary>
     [Signal]
     public delegate void ValueChangedEventHandler(string newValue);
 
-    [Export]
-    public override Node VisualComponent
-    {
-        get => _visualComponent;
-        set
-        {
-            _visualComponent = value;
-            NotifyPropertyListChanged();
-        }
-    }
+    #endregion
 
-    [Export]
-    public override string VisualProperty
-    {
-        get => _visualProperty;
-        set
-        {
-            if (_visualProperty == value) return;
-            _visualProperty = value;
-        }
-    }
+    #region Fields
 
-    private Node _visualComponent;
-    private string _visualProperty;
+    /// <summary>
+    /// Cached value of the string data item in Godot.
+    /// </summary>
     private string _gdValue = string.Empty;
 
+    /// <summary>
+    /// Reference to the visual component associated with this data item.
+    /// </summary>
+    private Node _visualComponent;
+
+    /// <summary>
+    /// Name of the property in the visual component to bind to.
+    /// </summary>
+    private string _visualProperty;
+
+    #endregion
+
+    #region Properties
+
+    /// <summary>
+    /// Gets or sets the string value in Godot.
+    /// When set, it updates the PLC value and emits a signal.
+    /// </summary>
     [Export]
     public string GDValue
     {
@@ -52,18 +62,61 @@ public partial class StringExItem : DataItem
         }
     }
 
-    // Opcional: Tamaño máximo de la cadena extendida
+    /// <summary>
+    /// Gets or sets the visual component associated with this data item.
+    /// </summary>
     [Export]
-    public int MaxLength { get; set; } = 1024; // Puedes ajustar el valor por defecto según tu PLC
-
-    private void UpdateVisualComponent(string value)
+    public override Node VisualComponent
     {
-        if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
+        get => _visualComponent;
+        set
         {
-            VisualComponent.Set(VisualProperty, value);
+            _visualComponent = value;
+            NotifyPropertyListChanged();
         }
     }
 
+    /// <summary>
+    /// Gets or sets the name of the visual property to bind to.
+    /// </summary>
+    [Export]
+    public override string VisualProperty
+    {
+        get => _visualProperty;
+        set
+        {
+            if (_visualProperty == value) return;
+            _visualProperty = value;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum length of the string.
+    /// </summary>
+    [Export]
+    public int MaxLength { get; set; } = 1024;
+
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Updates the visual component's property with the given string value.
+    /// </summary>
+    /// <param name="value">The string value to set in the visual component.</param>
+    private void UpdateVisualComponent(string value)
+    {
+        if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
+            VisualComponent.Set(VisualProperty, value);
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Updates the Godot value based on the PLC value and synchronizes it with the visual component.
+    /// </summary>
     public override void UpdateGDValue()
     {
         try
@@ -80,6 +133,9 @@ public partial class StringExItem : DataItem
         }
     }
 
+    /// <summary>
+    /// Updates the PLC value based on the visual component's property value.
+    /// </summary>
     public override void UpdateValue()
     {
         try
@@ -96,6 +152,13 @@ public partial class StringExItem : DataItem
         }
     }
 
+    #endregion
+
+    #region Constructor
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StringExItem"/> class with default values.
+    /// </summary>
     public StringExItem()
     {
         VarType = VarType.S7WString;
@@ -103,4 +166,6 @@ public partial class StringExItem : DataItem
         Count = 1;
         Value = string.Empty;
     }
+
+    #endregion
 }

@@ -99,9 +99,7 @@ public partial class BoolItem : DataItem
     private void UpdateVisualComponent(bool value)
     {
         if (VisualComponent != null && !string.IsNullOrEmpty(VisualProperty))
-        {
             VisualComponent.Set(VisualProperty, value);
-        }
     }
 
     #endregion

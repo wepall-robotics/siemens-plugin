@@ -2,7 +2,9 @@
 
 extends ConfirmationDialog
 
+#region Export Variables
 @export var progress_bar: ProgressBar
+#endregion
 
 #region Godot Override Methods
 func _ready() -> void:

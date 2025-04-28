@@ -1,14 +1,25 @@
 @tool
 extends EditorInspectorPlugin
 
+# PlcInspector: A plugin for managing and inspecting PLC-related objects in the Godot editor.
+
+#region Constants
 var PLC_COMMANDS : PackedScene
-var _plc: Plc
 var PropertySelector = preload("uid://k20fn1xhvv4k")
+#endregion
+
+#region Public Variables
+var _plc: Plc
 var item_type
+#endregion
 
+#region Built-in virtual Init
 func _init():
+	# Load the PLC commands scene.
 	PLC_COMMANDS = load("uid://c8an8h7jgu8of")
+#endregion
 
+#region Built-in functions
 # Determines if the given object can be handled by this controller.
 func _can_handle(object) -> bool:
 	if object is Plc:
@@ -20,6 +31,39 @@ func _can_handle(object) -> bool:
 
 	return false
 
+# Parses a category in the inspector.
+func _parse_category(object, category):
+	if category=="PlcCommands":
+		_create_command_tools()
+
+# Parses a property in the inspector.
+func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):
+	if name == "ghost_prop":
+		return true
+	if name == "VisualProperty" and object.VisualComponent != null:
+		var t
+		match object:
+			var x when x is BoolItem: t = TYPE_BOOL
+			var x when x is ByteItem: t = TYPE_INT
+			var x when x is DIntItem: t = TYPE_INT
+			var x when x is DWordItem: t = TYPE_INT
+			var x when x is IntItem: t = TYPE_INT
+			var x when x is RealItem: t = TYPE_FLOAT
+			var x when x is LRealItem: t = TYPE_FLOAT
+			var x when x is StringItem: t = TYPE_STRING
+			var x when x is StringExItem: t = TYPE_STRING
+			var x when x is WordItem: t = TYPE_INT
+			#var x when x is CounterItem: t = TYPE_INT
+			#var x when x is TimerItem: t = TYPE_INT
+			
+		var selector = PropertySelector.new(object.VisualComponent, t)
+		add_property_editor(name, selector)
+		return true
+	return false
+
+#endregion
+
+#region Private Functions
 ## Method to connect [b]EventBus signals[/b] to their respective handlers.
 func _connect_event_bus_signals() -> void:
 	await EventBus
@@ -52,34 +96,6 @@ func _connect_event_bus_signals() -> void:
 		EventBus.plc_disconnected.connect(_on_plc_disconnected)
 	if not EventBus.plc_already_disconnected.is_connected(_on_plc_already_disconnected):
 		EventBus.plc_already_disconnected.connect(_on_plc_already_disconnected)
-
-func _parse_category(object, category):
-	if category=="PlcCommands":
-		_create_command_tools()
-
-func _parse_property(object, type, name, hint_type, hint_string, usage_flags, wide):
-	if name == "ghost_prop":
-		return true
-	if name == "VisualProperty" and object.VisualComponent != null:
-		var t
-		match object:
-			var x when x is BoolItem: t = TYPE_BOOL
-			var x when x is ByteItem: t = TYPE_INT
-			var x when x is DIntItem: t = TYPE_INT
-			var x when x is DWordItem: t = TYPE_INT
-			var x when x is IntItem: t = TYPE_INT
-			var x when x is RealItem: t = TYPE_FLOAT
-			var x when x is LRealItem: t = TYPE_FLOAT
-			var x when x is StringItem: t = TYPE_STRING
-			var x when x is StringExItem: t = TYPE_STRING
-			var x when x is WordItem: t = TYPE_INT
-			#var x when x is CounterItem: t = TYPE_INT
-			#var x when x is TimerItem: t = TYPE_INT
-			
-		var selector = PropertySelector.new(object.VisualComponent, t)
-		add_property_editor(name, selector)
-		return true
-	return false
 
 ## Creates command tools and adds them as custom controls.
 func _create_command_tools():
@@ -275,3 +291,4 @@ func _import():
 ## Handles the export event.
 func _export():
 	print("Export")
+#endregion
