@@ -137,7 +137,7 @@ func _connect_plc():
 
 func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 	var params = {
-		"title": "Connecting to PLC",
+		"title": "Connecting to Plc",
 		"message": "Attempt %d/%d: Establishing connection..." % [attempt, max_attempts],
 		"progress": true,
 		"cancel_text": "Cancel",
@@ -151,12 +151,12 @@ func _on_plc_connection_attempt(attempt: int, max_attempts: int):
 ## [b]Returns:[/b] [color=#70bafa]void[/color]
 func _disconnect():
 	if not _plc or _plc.CurrentStatus != 0:
-		EventBus.plc_disconnection_failed.emit("PLC not configured or connected.", func(): pass)
+		EventBus.plc_disconnection_failed.emit("Plc not configured or connected.", func(): pass)
 		return
 
 	EventBus.confirm_popup_invoked.emit({
-		"title": "Disconnect PLC",
-		"message": "Are you sure you want to disconnect the PLC?",
+		"title": "Disconnect Plc",
+		"message": "Are you sure you want to disconnect the Plc?",
 		"ok_text": "Yes",
 		"cancel_text": "No",
 		"ok_callback": func(): _plc.Disconnect(EventBus)
@@ -165,14 +165,14 @@ func _disconnect():
 func _on_plc_disconnected(plc):
 	_plc.CurrentStatus = 1
 	_plc.IsOnline = false
-	print("PLC successfully disconnected.")
+	print_rich("[color=#fb7e7e]Plc successfully disconnected.[/color]")
 
 func _on_plc_disconnection_failed(reason):
-	print("PLC disconnection failed: %s" % reason)
+	print_rich("[color=#fb7e7e]Plc disconnection failed: %s[/color]" % reason)
 	
 	var params = {
 		"title": "Disconnection Error",
-		"message": "Failed to disconnect PLC:\n%s" % reason,
+		"message": "Failed to disconnect Plc:\n%s" % reason,
 		"ok_text": "OK"
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
@@ -180,7 +180,7 @@ func _on_plc_disconnection_failed(reason):
 func _on_plc_already_disconnected(plc):
 	_plc.CurrentStatus = 1
 	_plc.IsOnline = false
-	print("PLC was already disconnected.")
+	print_rich("[color=#fb7e7e]Plc was already disconnected.[/color]")
 
 ## Sends a ping to the [b]PLC[/b].
 ## [b]Returns:[/b]
@@ -204,7 +204,7 @@ func _ping() -> void:
 
 	# IP address is valid, start the ping process
 	var params = {
-		"title": "PLC Ping",
+		"title": "Plc Ping",
 		"message": "Testing connection to PLC...",
 		"progress": true,
 		"ok_text": "",  # Hide the OK button
@@ -218,25 +218,25 @@ func _ping() -> void:
 # when a connection to plc is accomplish.
 func _on_plc_connected(plcData):
 	_plc.CurrentStatus = 0
-	print("Plc connected.")
+	print_rich("[color=#70e03d]Plc connected.[/color]")
 	EventBus.close_confirm_popup.emit()
 	
 	var params = {
 		"title": "Connection Successful",
-		"message": "PLC connected successfully!",
+		"message": "Plc connected successfully!",
 		"ok_text": "OK",
 		"progress": false
 	}
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 func _on_plc_connection_lost(plcData):
-	print("Connection lost.")
+	print_rich("[color=#fb7e7e]Connection lost.[/color]")
 	_plc.CurrentStatus = 1
 	_plc.IsOnline = false
 	
 	var params = {
 		"title": "Connection Lost",
-		"message": "The connection to the PLC was lost. Attempting to reconnect...",
+		"message": "The connection to the Plc was lost. Attempting to reconnect...",
 		"progress": true,
 		"cancel_text": "Cancel"
 	}
@@ -258,8 +258,8 @@ func _on_plc_connection_failed(plcData: Plc, error: String) -> void:
 # when a ping attempt fails
 func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> void:
 	var params = {
-		"title": "PLC Ping",
-		"message": "Attempt %d of %d: Testing connection to PLC..." % [attempt, max_attempts],
+		"title": "Plc Ping",
+		"message": "Attempt %d of %d: Testing connection to Plc..." % [attempt, max_attempts],
 		"progress": true,
 		"cancel_callback": func():  _plc.CancelAllOperations()
 	}
@@ -269,7 +269,7 @@ func _on_ping_attempt_failed(ip: String, attempt: int, max_attempts: int) -> voi
 func _on_ping_completed(ip: String, success: bool) -> void:    
 	var params = {
 		"title": "Ping Result",
-		"message": "Connection " + ("successful" if success else "failed after %d attempts" % 4) + " to PLC at " + ip,
+		"message": "Connection " + ("successful" if success else "failed after %d attempts" % 4) + " to Plc at " + ip,
 		"ok_text": "OK",
 		"cancel_text": "",
 		"progress": false

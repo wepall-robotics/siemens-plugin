@@ -51,7 +51,7 @@ public partial class GroupData : Node, IPlcAction
     {
         if (ParentPlc == null || !ParentPlc.IsOnline)
         {
-            GD.PrintErr("PLC instance is null or is Offline. Cannot execute action.");
+            GD.PrintErr("Plc instance is null or is Offline. Cannot execute action.");
             return;
         }
 
@@ -72,7 +72,7 @@ public partial class GroupData : Node, IPlcAction
     {
         if (ParentPlc == null || !IsInstanceValid(ParentPlc))
         {
-            GD.PrintErr("PLC is null, cannot read data items.");
+            GD.PrintErr("Plc is null, cannot read data items.");
             return;
         }
 
@@ -93,7 +93,7 @@ public partial class GroupData : Node, IPlcAction
     {
         if (ParentPlc == null || !IsInstanceValid(ParentPlc))
         {
-            GD.PrintErr("PLC is null, cannot write data items.");
+            GD.PrintErr("Plc is null, cannot write data items.");
             return;
         }
 

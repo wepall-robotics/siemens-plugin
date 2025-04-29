@@ -117,10 +117,10 @@ namespace S7.Net
         /// </remarks>
         public void Disconnect(GodotObject eventBus = null)
         {
-            GD.Print("Disconnecting PLC...");
+            GD.PrintRich("[color=#82858b]Disconnecting Plc...[/color]");
             if (this == null)
             {
-                eventBus?.EmitSignal("plc_disconnection_failed", "PLC not valid.");
+                eventBus?.EmitSignal("plc_disconnection_failed", "Plc not valid.");
                 return;
             }
 
@@ -200,7 +200,8 @@ namespace S7.Net
                 if (!_registeredActions.Contains(action))
                 {
                     _registeredActions.Add(action);
-                    GD.Print($"Action registered: {action.GetType().Name}");
+
+                    GD.Print($"[color=#82858b]Action registered: {action.GetType().Name}[/color]");
                 }
             }
         }
@@ -220,7 +221,8 @@ namespace S7.Net
                 if (_registeredActions.Contains(action))
                 {
                     _registeredActions.Remove(action);
-                    GD.Print($"Action removed: {action.GetType().Name}");
+                    
+                    GD.Print($"[color=#82858b]Action removed: {action.GetType().Name}[/color]");
                 }
             }
         }
@@ -337,7 +339,7 @@ namespace S7.Net
             catch
             {
                 eventBus.EmitSignal("plc_connection_attempt_failed",
-                    this, "PLC not responding to ping");
+                    this, "Plc not responding to ping");
                 return false;
             }
         }
@@ -442,7 +444,7 @@ namespace S7.Net
                 {
                     await Task.Delay(DEFAULT_MONITOR_INTERVAL);
 
-                    if (IsOnline && this.IsConnected)
+                    if (IsOnline && await IsPingable(eventBus))
                     {
                         ProcessRegisteredActions(); // Process registered actions
                         eventBus.CallDeferred("emit_signal", "plc_data_updated", this);
@@ -492,7 +494,7 @@ namespace S7.Net
 
                 if (counter > 1)
                 {
-                    warnings.Add("There is another PLC with this IP.");
+                    warnings.Add("There is another Plc with this IP.");
                 }
             }
 
