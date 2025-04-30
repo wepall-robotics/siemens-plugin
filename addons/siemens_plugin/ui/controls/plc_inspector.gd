@@ -106,6 +106,7 @@ func _create_command_tools():
 ## Connects to the [b]PLC[/b] and establishes communication.
 ## [b]Returns:[/b] [color=#70bafa]bool[/color] - [i]True if the connection is successful, false otherwise.[/i]
 func _connect_plc():
+	_plc.ConnectPlc(EventBus)
 	# Validate the IP address
 	if not _plc or not _plc.ValidConfiguration:
 		return
@@ -131,7 +132,7 @@ func _connect_plc():
 		"cancel_text": "Cancel",
 		"cancel_callback": func():  _plc.CancelAllOperations()
 	}
-
+	
 	EventBus.confirm_popup_invoked.emit(params, func(): 
 		_plc.ConnectPlc(EventBus))
 

@@ -8,7 +8,6 @@ extends ConfirmationDialog
 
 #region Godot Override Methods
 func _ready() -> void:
-	print("Confirm windows ready.")
 	if not EventBus.confirm_popup_invoked.is_connected(_show_confirm_popup):
 		EventBus.confirm_popup_invoked.connect(_show_confirm_popup)
 	if not EventBus.modify_content_popup_invoked.is_connected(_modify_content_popup):

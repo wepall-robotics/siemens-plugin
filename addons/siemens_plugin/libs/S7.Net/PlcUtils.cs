@@ -32,7 +32,9 @@ namespace S7.Net
         #region Private Fields
         private CancellationTokenSource _currentCts;
         private CancellationTokenSource _monitoringCts;
-        private Plc _activePlc;
+        
+        [Export]
+        public Plc _activePlc;
         private List<IPlcAction> _registeredActions = new List<IPlcAction>();
         private object _actionsLock = new object();
         private Status _currentStatus = Status.Unknown;
@@ -97,6 +99,7 @@ namespace S7.Net
         #endregion
 
         #region Public API
+        
         /// <summary>
         /// Connects to the PLC and starts monitoring its status.
         /// </summary>
@@ -201,7 +204,7 @@ namespace S7.Net
                 {
                     _registeredActions.Add(action);
 
-                    GD.Print($"[color=#82858b]Action registered: {action.GetType().Name}[/color]");
+                    GD.PrintRich($"[color=#82858b]Action registered: {action.GetType().Name}[/color]");
                 }
             }
         }
@@ -221,8 +224,8 @@ namespace S7.Net
                 if (_registeredActions.Contains(action))
                 {
                     _registeredActions.Remove(action);
-                    
-                    GD.Print($"[color=#82858b]Action removed: {action.GetType().Name}[/color]");
+
+                    GD.PrintRich($"[color=#82858b]Action removed: {action.GetType().Name}[/color]");
                 }
             }
         }
@@ -270,7 +273,6 @@ namespace S7.Net
         {
             CancelAllOperations();
             _currentCts = new CancellationTokenSource();
-            _activePlc = this;
 
             try
             {

@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3 uid="uid://drvgxo8lpiugk"]
+
+[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/plc/s7-1500/s7_1500.tscn" id="1_mdcbm"]
+[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/plc/var_groups/GroupData.cs" id="2_3wt13"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/plc/var_items/BoolItem.cs" id="3_xkcaf"]
+
+[node name="ReadBoolean" type="Node3D"]
+
+[node name="S7-1500" parent="." instance=ExtResource("1_mdcbm")]
+ValidConfiguration = false
+
+[node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
+script = ExtResource("2_3wt13")
+Items = [NodePath("BoolItem")]
+metadata/_custom_type_script = "uid://cimys5c55w3ny"
+
+[node name="BoolItem" type="Node" parent="S7-1500/GroupData"]
+script = ExtResource("3_xkcaf")
+DataType = 131
+Count = 1
+metadata/_custom_type_script = "uid://bma7k4kp1anub"
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118669, 0.540444, 0)
+billboard = 1
+text = "1. Configure the Plc node as shown in the previous example.
+2. Add a GroupData node as a child of the Plc node.
+3. Add a BoolItem as a child of the GroupData node.
+4. Set the DataType to \"Memory\" to read a bit from the PLC.
+5. Set the Var Type to \"Bit\".
+6. Set DB to 0 if it is in the Main DB, or to the number of the DB where the boolean is stored.
+7. Set the StartByte Adr and Bit Adr according to the address of the bit in the PLC.
+8. Set Count to 1.
+9. Set Mode to \"ReadFromPlc\".
+10. Click \"Online Button\".
+11. View the value in the Gd Value property."
+font_size = 20
+horizontal_alignment = 0

@@ -1,0 +1,130 @@
+[gd_scene load_steps=9 format=3 uid="uid://bmk6dpqjbcp86"]
+
+[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/plc/s7-1500/s7_1500.tscn" id="1_tim5x"]
+[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/plc/var_groups/GroupData.cs" id="2_atrmf"]
+[ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/plc/var_items/BoolItem.cs" id="3_mcptc"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tim5x"]
+
+[sub_resource type="GDScript" id="GDScript_ieflu"]
+resource_name = "pe_behaviour"
+script/source = "extends CSGCylinder3D
+
+@export var on_blocked: bool = false:
+	set(value):
+		on_blocked = value
+		material.albedo_color = Color.RED if value else Color.WHITE
+
+func _ready():
+	material = StandardMaterial3D.new()
+
+	var area = $Area3D
+	area.body_entered.connect(_on_body_entered)
+	area.body_exited.connect(_on_body_exited)
+
+func _on_body_entered(body: Node3D):
+	on_blocked = true
+
+func _on_body_exited(body: Node3D):
+	on_blocked = false
+"
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_ill22"]
+radius = 0.0458984
+
+[sub_resource type="GDScript" id="GDScript_2gvk2"]
+resource_name = "ping_pong"
+script/source = "extends CSGBox3D
+
+@export var move_distance: float = 5.0  # Distancia máxima a recorrer
+@export var speed: float = 2.0          # Velocidad de movimiento
+
+@export var start: bool = false:
+	set(value):
+		start = value
+		_timer = 0.0
+		if start:
+			_start_position = global_position
+
+var _start_position: Vector3
+var _timer: float = 0.0
+
+func _ready():
+	_start_position = global_position
+
+func _process(delta: float):
+	if start:
+		_timer += delta * speed
+		# Movimiento ping-pong entre 0 y move_distance
+		var offset: float = pingpong(_timer, move_distance)
+		# Cambia .x por .y o .z para mover en otro eje
+		global_position = _start_position + Vector3(offset, 0, 0)
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2gvk2"]
+
+[node name="AdvancedVisualIntegration" type="Node3D"]
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 4.46062, 0, 0)
+radius = 0.0458984
+material = SubResource("StandardMaterial3D_tim5x")
+script = SubResource("GDScript_ieflu")
+
+[node name="Area3D" type="Area3D" parent="CSGCylinder3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGCylinder3D/Area3D"]
+shape = SubResource("CylinderShape3D_ill22")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.833452, 0.552592, 0, -0.552592, 0.833452, 1.89318, 1.21958, 2.8507)
+current = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.904455, 0.426569, 0, -0.426569, 0.904455, 0, 1.9422, 4.11681)
+
+[node name="S7-1500" parent="." node_paths=PackedStringArray("_activePlc") instance=ExtResource("1_tim5x")]
+_activePlc = NodePath(".")
+CurrentStatus = 1
+
+[node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
+script = ExtResource("2_atrmf")
+Items = [NodePath("BoolItem")]
+metadata/_custom_type_script = "uid://cimys5c55w3ny"
+
+[node name="BoolItem" type="Node" parent="S7-1500/GroupData" node_paths=PackedStringArray("VisualComponent")]
+script = ExtResource("3_mcptc")
+VisualComponent = NodePath("../../../CSGCylinder3D")
+VisualProperty = "on_blocked"
+DataType = 131
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://bma7k4kp1anub"
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+use_collision = true
+script = SubResource("GDScript_2gvk2")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="CSGBox3D"]
+gravity_scale = 0.0
+sleeping = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CSGBox3D/RigidBody3D"]
+shape = SubResource("BoxShape3D_2gvk2")
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118669, 0.540444, 0)
+billboard = 1
+text = "1. Configure the Plc node as shown in the previous example.
+2. Add a GroupData node as a child of the Plc node.
+3. Add a BoolItem as a child of the GroupData node.
+4. Set the DataType to \"Memory\" to read a bit from the PLC.
+5. Set the Var Type to \"Bit\".
+6. Set DB to 0 if it is in the Main DB, or to the number of the DB where the boolean is stored.
+7. Set the StartByte Adr and Bit Adr according to the address of the bit in the PLC.
+8. Set Count to 1.
+9. Set Mode to \"ReadFromPlc\".
+10. Click \"Online Button\".
+11. View the value in the Gd Value property."
+font_size = 20
+horizontal_alignment = 0

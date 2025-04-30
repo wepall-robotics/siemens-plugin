@@ -1,0 +1,64 @@
+[gd_scene load_steps=6 format=3 uid="uid://dq3a0rn2h4jtd"]
+
+[ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/plc/s7-1500/s7_1500.tscn" id="1_f1ay6"]
+[ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/plc/var_groups/GroupData.cs" id="2_ks450"]
+[ext_resource type="Script" uid="uid://bcbqwmy7it76m" path="res://addons/siemens_plugin/plc/var_items/IntItem.cs" id="3_2gtt6"]
+[ext_resource type="Script" uid="uid://bk7ftrcvkpmsx" path="res://addons/siemens_plugin/plc/var_items/RealItem.cs" id="4_qilek"]
+[ext_resource type="Script" uid="uid://5lukueqej4rr" path="res://addons/siemens_plugin/plc/var_items/LRealItem.cs" id="5_f1ay6"]
+
+[node name="WriteNumeric" type="Node3D"]
+
+[node name="S7-1500" parent="." instance=ExtResource("1_f1ay6")]
+ValidConfiguration = false
+
+[node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
+script = ExtResource("2_ks450")
+Items = [NodePath("IntItem"), NodePath("RealItem"), NodePath("LRealItem")]
+metadata/_custom_type_script = "uid://cimys5c55w3ny"
+
+[node name="IntItem" type="Node" parent="S7-1500/GroupData"]
+script = ExtResource("3_2gtt6")
+GDValue = 10
+DataType = 131
+VarType = 4
+StartByteAdr = 12
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://bcbqwmy7it76m"
+
+[node name="RealItem" type="Node" parent="S7-1500/GroupData"]
+script = ExtResource("4_qilek")
+GDValue = 101.45
+DataType = 131
+VarType = 6
+StartByteAdr = 200
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://bk7ftrcvkpmsx"
+
+[node name="LRealItem" type="Node" parent="S7-1500/GroupData"]
+script = ExtResource("5_f1ay6")
+GDValue = 20.789
+DataType = 131
+VarType = 7
+StartByteAdr = 208
+Count = 1
+Mode = 1
+metadata/_custom_type_script = "uid://5lukueqej4rr"
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118669, 0.540444, 0)
+billboard = 1
+text = "1. Configure the Plc node as shown in the previous example.
+2. Add a GroupData node as a child of the Plc node.
+3. Add an IntItem, RealItem and LRealItem as a child of the GroupData node.
+4. Set the DataType to \"Memory\" to read a bit from the PLC.
+5. Var Type is set to \"Int\", \"Real\" and \"LReal\" depending on Item choose.
+6. Set DB to 0 if it is in the Main DB, or to the number of the DB where the boolean is stored.
+7. Set the StartByte Adr and Bit Adr according to the address of the bit in the PLC.
+8. Set Count to 1.
+9. Set Mode to \"WriteFromPlc\".
+10. Click \"Online Button\".
+11. View the value in the Gd Value property."
+font_size = 20
+horizontal_alignment = 0
