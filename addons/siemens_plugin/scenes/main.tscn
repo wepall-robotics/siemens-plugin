@@ -21,7 +21,8 @@ radius = 0.0200195
 height = 1.9248
 
 [node name="S7-1500" parent="." instance=ExtResource("1_hcxmn")]
-ValidConfiguration = false
+CurrentStatus = 0
+IsOnline = true
 
 [node name="DataGroup" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_xinta")

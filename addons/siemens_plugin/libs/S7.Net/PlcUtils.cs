@@ -516,14 +516,14 @@ namespace S7.Net
             // Acceder al nombre de la propiedad usando la key del diccionario
             StringName propertyName = property["name"].AsStringName();
 
-            if (propertyName == nameof(CurrentStatus))
-            {
-                // Modificar el flag de uso (casting necesario)
-                PropertyUsageFlags usage = property["usage"].As<PropertyUsageFlags>();
-                usage = PropertyUsageFlags.NoEditor;
-                property["usage"] = (int)usage;
-            }
-            else if (propertyName == nameof(GhostProp))
+            // if (propertyName == nameof(CurrentStatus))
+            // {
+            //     // Modificar el flag de uso (casting necesario)
+            //     PropertyUsageFlags usage = property["usage"].As<PropertyUsageFlags>();
+            //     usage = PropertyUsageFlags.ReadOnly;
+            //     property["usage"] = (int)usage;
+            // }
+            if (propertyName == nameof(GhostProp))
             {
                 PropertyUsageFlags usage = property["usage"].As<PropertyUsageFlags>();
                 usage = PropertyUsageFlags.NoEditor;

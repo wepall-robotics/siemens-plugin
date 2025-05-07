@@ -283,7 +283,12 @@ func _on_ping_completed(ip: String, success: bool) -> void:
 ## [b]Parameters:[/b]
 ## - [param duration]: [color=#70bafa]int[/color] - Duration in seconds to monitor signals.
 func _online():
-	_plc.IsOnline = !_plc.IsOnline
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	undo_redo.create_action("Set Online")
+	undo_redo.add_do_property(_plc, "IsOnline", !_plc.IsOnline)
+	undo_redo.add_undo_property(_plc, "IsOnline", _plc.IsOnline)
+	undo_redo.commit_action()
+	#_plc.IsOnline = !_plc.IsOnline
 
 ## Handles the import event.
 func _import():
