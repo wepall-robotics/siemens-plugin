@@ -10,7 +10,7 @@ A powerful plugin to connect **Siemens S7 PLCs** with the **Godot Engine**, enab
 - **Robust error handling** and automatic reconnection logic
 - **Extensible**: Easily add new variable types and behaviors
 
-![[Siemens-Plugin.gif](images/Siemens-Plugin.gif)]
+![Siemens-Plugin.gif](images/Siemens-Plugin.gif)]
 
 ---
 
@@ -32,7 +32,7 @@ A powerful plugin to connect **Siemens S7 PLCs** with the **Godot Engine**, enab
 | LReal   | 64-bit floating-point number |
 | String  | Character string             |
 
-![Pasted image 20250515093146.png](images/Siemens-Plugin.gif)
+![Items.png](images/Items.png)
 
 **DataItem Properties:**
 
@@ -202,7 +202,7 @@ An example showing how to bind **PLC variables** to **advanced visual properties
 - Ensure your PLC is reachable from your network.
 - Check firewall settings and PLC configuration.
 - In TIA Portal, allow access with PUT/GET communication from remote partners.
-![Pasted image 20250508124504.png](images/1.Basic-Connection.gif)
+![Plc.png](images/Plc.png)
 - Use the Godot output console for error messages.
 
 ---
