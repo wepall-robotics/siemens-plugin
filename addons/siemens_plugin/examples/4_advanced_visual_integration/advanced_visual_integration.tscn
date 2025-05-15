@@ -1,8 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://bmk6dpqjbcp86"]
+[gd_scene load_steps=9 format=3 uid="uid://bmk6dpqjbcp86"]
 
 [ext_resource type="PackedScene" uid="uid://bc274oucqoi8a" path="res://addons/siemens_plugin/plc/s7-1500/s7_1500.tscn" id="1_tim5x"]
 [ext_resource type="Script" uid="uid://cimys5c55w3ny" path="res://addons/siemens_plugin/plc/var_groups/GroupData.cs" id="2_atrmf"]
-[ext_resource type="Script" uid="uid://ddtn3y2cjggu1" path="res://addons/siemens_plugin/libs/S7.Net/Types/DataItem.cs" id="3_atrmf"]
 [ext_resource type="Script" uid="uid://bma7k4kp1anub" path="res://addons/siemens_plugin/plc/var_items/BoolItem.cs" id="3_mcptc"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tim5x"]
@@ -44,14 +43,15 @@ script/source = "extends CSGBox3D
 	set(value):
 		start = value
 		_timer = 0.0
-		if start:
-			_start_position = global_position
+		#if start:
+			#_start_position = global_position
 
 var _start_position: Vector3
 var _timer: float = 0.0
 
 func _ready():
 	_start_position = global_position
+	start = true
 
 func _process(delta: float):
 	if start:
@@ -78,46 +78,29 @@ script = SubResource("GDScript_ieflu")
 shape = SubResource("CylinderShape3D_ill22")
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.833452, 0.552592, 0, -0.552592, 0.833452, 1.89318, 1.21958, 2.8507)
+transform = Transform3D(1, 0, 0, 0, 0.833452, 0.552592, 0, -0.552592, 0.833452, 1.89318, 0.975722, 2.8507)
 current = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.904455, 0.426569, 0, -0.426569, 0.904455, 0, 1.9422, 4.11681)
 
 [node name="S7-1500" parent="." node_paths=PackedStringArray("_activePlc") instance=ExtResource("1_tim5x")]
-Port = 102
-MaxPDUSize = 960
-ReadTimeout = 2000
-WriteTimeout = 2000
-CurrentStatus = 0
-GhostProp = false
-readTimeout = 2000
-writeTimeout = 2000
-_ip = "192.168.0.1"
-disposedValue = false
 _activePlc = NodePath(".")
-_currentStatus = 0
-_validConfiguration = true
+CurrentStatus = 0
+IsOnline = true
 
-[node name="GroupData" type="Node" parent="S7-1500"]
+[node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_atrmf")
-Items = Array[ExtResource("3_atrmf")]([Object(Node,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"physics_interpolation_mode":0,"auto_translate_mode":0,"editor_description":"","script":ExtResource("3_mcptc"),"DataType":131,"VarType":0,"DB":0,"StartByteAdr":0,"BitAdr":0,"Count":1,"Mode":1,"VisualComponent":Object(CSGCylinder3D,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"physics_interpolation_mode":0,"auto_translate_mode":0,"editor_description":"","transform":Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 4.46062, 0, 0),"rotation_edit_mode":0,"rotation_order":2,"top_level":false,"visible":true,"visibility_parent":NodePath(""),"layers":1,"sorting_offset":0.0,"sorting_use_aabb_center":true,"material_override":null,"material_overlay":null,"transparency":0.0,"cast_shadow":1,"extra_cull_margin":0.0,"custom_aabb":AABB(0, 0, 0, 0, 0, 0),"lod_bias":1.0,"ignore_occlusion_culling":false,"gi_mode":1,"gi_lightmap_texel_scale":1.0,"visibility_range_begin":0.0,"visibility_range_begin_margin":0.0,"visibility_range_end":0.0,"visibility_range_end_margin":0.0,"visibility_range_fade_mode":0,"operation":0,"calculate_tangents":true,"use_collision":false,"collision_layer":1,"collision_mask":1,"collision_priority":1.0,"flip_faces":false,"radius":0.0458984,"height":2.0,"sides":8,"cone":false,"smooth_faces":true,"material":SubResource("StandardMaterial3D_tim5x"),"script":SubResource("GDScript_ieflu"),"on_blocked":false)
-,"VisualProperty":"on_blocked","GDValue":false,"_gdValue":false,"_visualComponent":Object(CSGCylinder3D,"_import_path":NodePath(""),"unique_name_in_owner":false,"process_mode":0,"process_priority":0,"process_physics_priority":0,"process_thread_group":0,"physics_interpolation_mode":0,"auto_translate_mode":0,"editor_description":"","transform":Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 4.46062, 0, 0),"rotation_edit_mode":0,"rotation_order":2,"top_level":false,"visible":true,"visibility_parent":NodePath(""),"layers":1,"sorting_offset":0.0,"sorting_use_aabb_center":true,"material_override":null,"material_overlay":null,"transparency":0.0,"cast_shadow":1,"extra_cull_margin":0.0,"custom_aabb":AABB(0, 0, 0, 0, 0, 0),"lod_bias":1.0,"ignore_occlusion_culling":false,"gi_mode":1,"gi_lightmap_texel_scale":1.0,"visibility_range_begin":0.0,"visibility_range_begin_margin":0.0,"visibility_range_end":0.0,"visibility_range_end_margin":0.0,"visibility_range_fade_mode":0,"operation":0,"calculate_tangents":true,"use_collision":false,"collision_layer":1,"collision_mask":1,"collision_priority":1.0,"flip_faces":false,"radius":0.0458984,"height":2.0,"sides":8,"cone":false,"smooth_faces":true,"material":SubResource("StandardMaterial3D_tim5x"),"script":SubResource("GDScript_ieflu"),"on_blocked":false)
-,"_visualProperty":"on_blocked","metadata/_custom_type_script":"uid://bma7k4kp1anub")
-])
-_isRegistered = true
+Items = [NodePath("BoolItem")]
 metadata/_custom_type_script = "uid://cimys5c55w3ny"
 
-[node name="BoolItem" type="Node" parent="S7-1500/GroupData" node_paths=PackedStringArray("VisualComponent", "_visualComponent")]
+[node name="BoolItem" type="Node" parent="S7-1500/GroupData" node_paths=PackedStringArray("VisualComponent")]
 script = ExtResource("3_mcptc")
+VisualComponent = NodePath("../../../CSGCylinder3D")
+VisualProperty = "on_blocked"
 DataType = 131
 Count = 1
 Mode = 1
-VisualComponent = NodePath("../../../CSGCylinder3D")
-VisualProperty = "on_blocked"
-_gdValue = false
-_visualComponent = NodePath("../../../CSGCylinder3D")
-_visualProperty = "on_blocked"
 metadata/_custom_type_script = "uid://bma7k4kp1anub"
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
@@ -132,18 +115,24 @@ sleeping = true
 shape = SubResource("BoxShape3D_2gvk2")
 
 [node name="Label3D" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118669, 0.540444, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.866601, -1.80649, 0.975997)
 billboard = 1
 text = "1. Configure the Plc node as shown in the previous example.
 2. Add a GroupData node as a child of the Plc node.
 3. Add a BoolItem as a child of the GroupData node.
-4. Set the DataType to \"Memory\" to read a bit from the PLC.
+4. Set the DataType to \"Memory\" to write a bit from Godot to Plc.
 5. Set the Var Type to \"Bit\".
 6. Set DB to 0 if it is in the Main DB, or to the number of the DB where the boolean is stored.
 7. Set the StartByte Adr and Bit Adr according to the address of the bit in the PLC.
 8. Set Count to 1.
-9. Set Mode to \"ReadFromPlc\".
-10. Click \"Online Button\".
-11. View the value in the Gd Value property."
+9. Set Mode to \"WriteToPlc\".
+10. Select BoolItem.
+11. Drag&Drop \"CSGCylinder3D\" to \"Visual Component\" property in inspector.
+12. Select \"on_blocked\" property in field \"Visual Property\".
+13. Click \"Online Button\".
+14. Click on \"Run current scene\".
+15. \"Onblocked\" property will write to Memory \"M0.0 in Plc.
+11. Run Current Scene.
+12. View value changing in TIA Portal."
 font_size = 20
 horizontal_alignment = 0

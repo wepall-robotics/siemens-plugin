@@ -38,7 +38,6 @@ metadata/_custom_type_script = "uid://bma7k4kp1anub"
 
 [node name="ByteItem" type="Node" parent="S7-1500/DataGroup"]
 script = ExtResource("11_hl8vw")
-GDValue = 10
 DataType = 131
 VarType = 1
 StartByteAdr = 1
@@ -54,7 +53,6 @@ metadata/_custom_type_script = "uid://bma7k4kp1anub"
 
 [node name="IntItem" type="Node" parent="S7-1500/DataGroup"]
 script = ExtResource("3_saywg")
-GDValue = 7
 DataType = 132
 VarType = 4
 DB = 1
@@ -105,7 +103,6 @@ metadata/_custom_type_script = "uid://scud14273udh"
 
 [node name="TimeItem" type="Node" parent="S7-1500/DataGroup"]
 script = ExtResource("13_saywg")
-GDValue = 1000000
 DataType = 131
 VarType = 16
 StartByteAdr = 204
@@ -114,7 +111,6 @@ metadata/_custom_type_script = "uid://bntgjh6xuixmp"
 
 [node name="LRealItem" type="Node" parent="S7-1500/DataGroup"]
 script = ExtResource("12_0sypd")
-GDValue = 180000.0
 DataType = 131
 VarType = 7
 StartByteAdr = 208

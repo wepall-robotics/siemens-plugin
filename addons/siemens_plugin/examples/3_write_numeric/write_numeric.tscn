@@ -9,7 +9,8 @@
 [node name="WriteNumeric" type="Node3D"]
 
 [node name="S7-1500" parent="." instance=ExtResource("1_f1ay6")]
-ValidConfiguration = false
+CurrentStatus = 0
+IsOnline = true
 
 [node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_ks450")
@@ -18,7 +19,6 @@ metadata/_custom_type_script = "uid://cimys5c55w3ny"
 
 [node name="IntItem" type="Node" parent="S7-1500/GroupData"]
 script = ExtResource("3_2gtt6")
-GDValue = 10
 DataType = 131
 VarType = 4
 StartByteAdr = 12
@@ -28,7 +28,6 @@ metadata/_custom_type_script = "uid://bcbqwmy7it76m"
 
 [node name="RealItem" type="Node" parent="S7-1500/GroupData"]
 script = ExtResource("4_qilek")
-GDValue = 101.45
 DataType = 131
 VarType = 6
 StartByteAdr = 200
@@ -38,7 +37,6 @@ metadata/_custom_type_script = "uid://bk7ftrcvkpmsx"
 
 [node name="LRealItem" type="Node" parent="S7-1500/GroupData"]
 script = ExtResource("5_f1ay6")
-GDValue = 20.789
 DataType = 131
 VarType = 7
 StartByteAdr = 208
@@ -59,6 +57,8 @@ text = "1. Configure the Plc node as shown in the previous example.
 8. Set Count to 1.
 9. Set Mode to \"WriteFromPlc\".
 10. Click \"Online Button\".
-11. View the value in the Gd Value property."
+11. Run Current Scene.
+12. Select \"IntItem\", \"RealItem\" or \"LRealItem\" and change \"GdValue\".
+13. View value changing in TIA Portal."
 font_size = 20
 horizontal_alignment = 0

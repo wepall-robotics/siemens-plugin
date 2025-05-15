@@ -29,6 +29,10 @@ window/stretch/mode="viewport"
 
 project/assembly_name="Siemens-Plugin"
 
+[editor]
+
+movie_writer/movie_file="C:/Users/Alex/Desktop/siemens-plugin.avi"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/siemens_plugin/plugin.cfg")
@@ -39,6 +43,7 @@ folder_colors={
 "res://addons/siemens_plugin/components/": "red",
 "res://addons/siemens_plugin/examples/": "red",
 "res://addons/siemens_plugin/icons/": "orange",
+"res://addons/siemens_plugin/images/": "gray",
 "res://addons/siemens_plugin/libs/": "yellow",
 "res://addons/siemens_plugin/plc/": "green",
 "res://addons/siemens_plugin/scenes/": "teal",

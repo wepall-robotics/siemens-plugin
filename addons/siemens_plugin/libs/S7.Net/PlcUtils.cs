@@ -32,7 +32,7 @@ namespace S7.Net
         #region Private Fields
         private CancellationTokenSource _currentCts;
         private CancellationTokenSource _monitoringCts;
-        
+
         [Export]
         public Plc _activePlc;
         private List<IPlcAction> _registeredActions = new List<IPlcAction>();
@@ -98,8 +98,69 @@ namespace S7.Net
         public bool IsOnline { get; set; } = false;
         #endregion
 
+        #region Godot Lifecycle Methods
+
+        /// <summary>
+        /// Handles the physics process for the PLC node.
+        /// Establishes or terminates connection based on online status and current status.
+        /// Executes registered actions when connected and online.
+        /// </summary>
+        /// <param name="delta">The frame time since the last call, in seconds.</param>
+        public override void _PhysicsProcess(double delta)
+        {
+            if (!Engine.IsEditorHint())
+            {
+                if (IsOnline && CurrentStatus == Status.Connected)
+                {
+                    if (!IsConnected)
+                    {
+                        GD.PrintRich($"[color=#82858b]Connecting to PLC in runtime...[/color]");
+                        Open();
+                        return;
+                    }
+                    RuntimeRegisteredActions();
+                }
+                else
+                {
+                    if (IsConnected)
+                    {
+                        GD.PrintRich($"[color=#82858b]Disconnecting to PLC in runtime...[/color]");
+                        Close();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called when the node is added to the scene tree.
+        /// When in editor mode, initializes the PLC node and sets the current status to Unknown.
+        /// </summary>
+        public override void _Ready()
+        {
+            if (Engine.IsEditorHint())
+            {
+                GD.PrintRich($"[color=#82858b]Initializing PLC in editor mode...[/color]");
+                CurrentStatus = Status.Unknown;
+            }
+        }
+
+        /// <summary>
+        /// Called when the node is removed from the scene tree.
+        /// Disconnects from the PLC if connected and stops monitoring its status.
+        /// </summary>
+        public override void _ExitTree()
+        {
+            if (IsConnected)
+            {
+                GD.PrintRich($"[color=#82858b]Disconnecting to PLC in runtime...[/color]");
+                Close();
+            }
+        }
+
+        #endregion
+
         #region Public API
-        
+
         /// <summary>
         /// Connects to the PLC and starts monitoring its status.
         /// </summary>
@@ -448,7 +509,7 @@ namespace S7.Net
 
                     if (IsOnline && await IsPingable(eventBus))
                     {
-                        ProcessRegisteredActions(); // Process registered actions
+                        //ProcessRegisteredActions(); // Process registered actions
                         eventBus.CallDeferred("emit_signal", "plc_data_updated", this);
                     }
 
@@ -459,6 +520,25 @@ namespace S7.Net
                     }
                 }
             });
+        }
+
+
+
+        private void RuntimeRegisteredActions()
+        {
+            if (!IsOnline || _registeredActions.Count == 0) return;
+
+            try
+            {
+                foreach (var action in _registeredActions.OfType<IPlcAction>())
+                {
+                    action.Execute();
+                }
+            }
+            catch (Exception ex)
+            {
+                GD.PrintErr($"Action processing failed: {ex.Message}");
+            }
         }
         #endregion
 

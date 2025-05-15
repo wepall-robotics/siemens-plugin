@@ -105,7 +105,8 @@ public partial class GroupData : Node, IPlcAction
         if (_itemsToProcess.Count == 0) return;
 
         // Call the method without parameters
-        CallDeferred(nameof(DeferredWriteAll));
+        DeferredWriteAll();
+
     }
 
     #endregion

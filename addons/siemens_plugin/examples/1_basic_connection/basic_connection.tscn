@@ -5,16 +5,16 @@
 [node name="BasicConnection" type="Node3D"]
 
 [node name="S7-1500" parent="." instance=ExtResource("1_kcdpm")]
-ValidConfiguration = false
 
 [node name="Label3D" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.118669, 0.540444, 0)
 billboard = 1
-text = "1. Enter the PLC's IP address.
-2. Select the cpu type.
-3. Set rack and slot
-4. Click the Connect button.
-5. Check the connection status.
-6. (Optional) Disconnect when finished."
+text = "1. Add Plc scene to tree.
+2. Enter the PLC's IP address.
+3. Select the cpu type.
+4. Set rack and slot
+5. Click the Connect button.
+6. Check the connection status.
+7. (Optional) Disconnect when finished."
 font_size = 20
 horizontal_alignment = 0

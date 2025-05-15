@@ -7,7 +7,6 @@
 [node name="ReadBoolean" type="Node3D"]
 
 [node name="S7-1500" parent="." instance=ExtResource("1_mdcbm")]
-ValidConfiguration = false
 
 [node name="GroupData" type="Node" parent="S7-1500" node_paths=PackedStringArray("Items")]
 script = ExtResource("2_3wt13")
@@ -33,6 +32,8 @@ text = "1. Configure the Plc node as shown in the previous example.
 8. Set Count to 1.
 9. Set Mode to \"ReadFromPlc\".
 10. Click \"Online Button\".
-11. View the value in the Gd Value property."
+11. Run Current Scene.
+12. Select \"BoolItem\".
+13. View the value in the Gd Value property."
 font_size = 20
 horizontal_alignment = 0

@@ -78,8 +78,8 @@ func _connect_event_bus_signals() -> void:
 		EventBus.plc_connected.connect(_on_plc_connected)
 	if not EventBus.plc_disconnect_invoked.is_connected(_disconnect):
 		EventBus.plc_disconnect_invoked.connect(_disconnect)
-	if not EventBus.online_invoked.is_connected(_online):
-		EventBus.online_invoked.connect(_online)
+	if not EventBus.online_invoked.is_connected(_toggle_online):
+		EventBus.online_invoked.connect(_toggle_online)
 	if not EventBus.import_invoked.is_connected(_import):
 		EventBus.import_invoked.connect(_import)
 	if not EventBus.export_invoked.is_connected(_export):
@@ -164,8 +164,9 @@ func _disconnect():
 	}, func(): pass)
 
 func _on_plc_disconnected(plc):
-	_plc.CurrentStatus = 1
-	_plc.IsOnline = false
+	_set_status(1)
+	#_plc.CurrentStatus = 1
+	_online(false)
 	print_rich("[color=#fb7e7e]Plc successfully disconnected.[/color]")
 
 func _on_plc_disconnection_failed(reason):
@@ -179,8 +180,9 @@ func _on_plc_disconnection_failed(reason):
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
 func _on_plc_already_disconnected(plc):
-	_plc.CurrentStatus = 1
-	_plc.IsOnline = false
+	_set_status(1)
+	#_plc.CurrentStatus = 1
+	_online(false)
 	print_rich("[color=#fb7e7e]Plc was already disconnected.[/color]")
 
 ## Sends a ping to the [b]PLC[/b].
@@ -218,7 +220,8 @@ func _ping() -> void:
 # Function to modify content of the confirmation dialog
 # when a connection to plc is accomplish.
 func _on_plc_connected(plcData):
-	_plc.CurrentStatus = 0
+	_set_status(0)
+	#_plc.CurrentStatus = 0
 	print_rich("[color=#70e03d]Plc connected.[/color]")
 	EventBus.close_confirm_popup.emit()
 	
@@ -232,8 +235,9 @@ func _on_plc_connected(plcData):
 
 func _on_plc_connection_lost(plcData):
 	print_rich("[color=#fb7e7e]Connection lost.[/color]")
-	_plc.CurrentStatus = 1
-	_plc.IsOnline = false
+	_set_status(1)
+	#_plc.CurrentStatus = 1
+	_online(false)
 	
 	var params = {
 		"title": "Connection Lost",
@@ -278,17 +282,26 @@ func _on_ping_completed(ip: String, success: bool) -> void:
 
 	EventBus.modify_content_popup_invoked.emit(params, func(): pass)
 
+func _toggle_online():
+	_online(!_plc.IsOnline)
+
 ## Monitors live signals from the [b]PLC[/b].
 ## Displays real-time value changes and interactions.
 ## [b]Parameters:[/b]
 ## - [param duration]: [color=#70bafa]int[/color] - Duration in seconds to monitor signals.
-func _online():
+func _online(_value: bool) -> void:
 	var undo_redo = EditorInterface.get_editor_undo_redo()
 	undo_redo.create_action("Set Online")
-	undo_redo.add_do_property(_plc, "IsOnline", !_plc.IsOnline)
-	undo_redo.add_undo_property(_plc, "IsOnline", _plc.IsOnline)
+	undo_redo.add_do_property(_plc, "IsOnline", _value)
+	undo_redo.add_undo_property(_plc, "IsOnline", !_value)
 	undo_redo.commit_action()
-	#_plc.IsOnline = !_plc.IsOnline
+
+func _set_status(_value: int) -> void:
+	var undo_redo = EditorInterface.get_editor_undo_redo()
+	undo_redo.create_action("Set Status")
+	undo_redo.add_do_property(_plc, "CurrentStatus", _value)
+	undo_redo.add_undo_property(_plc, "CurrentStatus", _plc.CurrentStatus)
+	undo_redo.commit_action()
 
 ## Handles the import event.
 func _import():
