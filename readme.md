@@ -10,7 +10,7 @@ A powerful plugin to connect **Siemens S7 PLCs** with the **Godot Engine**, enab
 - **Robust error handling** and automatic reconnection logic
 - **Extensible**: Easily add new variable types and behaviors
 
-![Siemens-Plugin.gif](images/Siemens-Plugin.gif)]
+![Siemens-Plugin.gif](docs/images/Siemens-Plugin.gif)]
 
 ---
 
@@ -32,7 +32,7 @@ A powerful plugin to connect **Siemens S7 PLCs** with the **Godot Engine**, enab
 | LReal   | 64-bit floating-point number |
 | String  | Character string             |
 
-![Items.png](images/Items.png)
+![Items.png](docs/images/Items.png)
 
 **DataItem Properties:**
 
@@ -95,7 +95,7 @@ A simple scene allowing you to configure the PLC's **IP address**, **CPU type**,
 5. Click the **Connect** button.
 6. Check the **connection status**.
 
-![1.Basic-Connection.gif](images/1.Basic-Connection.gif)
+![1.Basic-Connection.gif](docs/images/1.Basic-Connection.gif)
 ---
 
 ### 2. Reading a Boolean Variable
@@ -124,7 +124,7 @@ A scene with a visual switch (checkbox or button) that reflects the state of a *
 12. Select "**BoolItem**".
 13. View the value in the "**Gd** **Value**" property.
 
-![2.Read-Bool.gif](images/2.Read-Bool.gif)
+![2.Read-Bool.gif](docs/images/2.Read-Bool.gif)
 ---
 
 ### 3. Writing Numeric Variables
@@ -153,7 +153,7 @@ A scene with **numeric input fields** for **writing integer** and **floating-poi
 12. Select "**IntItem**", "**RealItem**", or "**LRealItem**" and change the "**GdValue**".
 13. View the value changing in **TIA Portal**.
 
-![3.Write-Nums.gif](images/3.Write-Nums.gif)
+![3.Write-Nums.gif](docs/images/3.Write-Nums.gif)
 ---
 
 ### 4. Advanced Visual Integration
@@ -185,7 +185,7 @@ An example showing how to bind **PLC variables** to **advanced visual properties
 15. The "**on_blocked**" property will write to memory (e.g., M0.0) in the PLC.
 16. View the value changing in **TIA Portal**.
 
-![4.Advanced-Visual-Integration.gif](images/4.Advanced-Visual-Integration.gif)
+![4.Advanced-Visual-Integration.gif](docs/images/4.Advanced-Visual-Integration.gif)
 ---
 
 ## Reference
@@ -202,7 +202,7 @@ An example showing how to bind **PLC variables** to **advanced visual properties
 - Ensure your PLC is reachable from your network.
 - Check firewall settings and PLC configuration.
 - In TIA Portal, allow access with PUT/GET communication from remote partners.
-![Plc.png](images/Plc.png)
+![Plc.png](docs/images/Plc.png)
 - Use the Godot output console for error messages.
 
 ---
